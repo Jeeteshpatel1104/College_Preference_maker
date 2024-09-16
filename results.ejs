@@ -1,0 +1,61 @@
+
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Search Results</title>
+</head>
+<body>
+    <h2>Search Results</h2>
+    
+    
+    <% if (results && results.length > 0) { %>
+        <table border="1">
+            <tr>
+                <th>S.No</th>
+                <th>College Name</th>
+                <th>Institute Type</th>
+                <th>Branch</th>
+                <th>Category</th>
+                <th>Opening Rank</th>
+                <th>Closing Rank</th>
+            </tr>
+            <% results.forEach(function(row, index) { %>
+            <tr>
+                <td><%= index + 1 %></td>
+                <td><%= row.college_name %></td>
+                <td><%= row.institute_type %></td>
+                <td><%= row.branch %></td>
+                <td><%= row.allotted_category %></td>
+                <td><%= row.opening_rank %></td>
+                <td><%= row.closing_rank %></td>
+            </tr>
+            <% }) %>
+        </table>
+    <% } else { %>
+        <p>No colleges found for the given rank and category.</p>
+    <% } %>
+    <a href="/">Search Again</a>
+</body>
+</html> 
+
+
+
+<!-- SELECT college_name, institute_type, branch, opening_rank, closing_rank
+FROM data_table
+WHERE closing_rank BETWEEN 50000 AND 80000
+AND allotted_category = 'EWS'; -->
+
+<!-- LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/updated_10_col.csv'
+INTO TABLE data_table
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n' -->
+
+<!-- SELECT * FROM data_table
+WHERE closing_rank BETWEEN 50000 AND 90000
+AND allotted_category = 'OBC/X/OP'; -->
+
+<!-- SELECT * FROM data_table 
+WHERE allotted_category = 'OBC/X/OP' ; -->
