@@ -1,273 +1,487 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>College Preference Finder</title>
-         
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Preference Finder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f1efe7;
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
 
-        <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    }
+        .dropdown-btn {
+            background-color:#f1efe7;
+            color: rgb(0, 0, 0);
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            text-align: left;
+        }
 
-                    h2 {
-                        text-align: center;
-                        margin-bottom: 20px;
-                    }
+        .dropdown-btn:hover {
+            background-color: #ffffff;
+        }
 
-                .horizontal-container {
-                    display: flex;
-                    justify-content: space-between;
-                    padding: 10px;
-                    background-color: #f4f4f4;
-                    border-bottom: 1px solid #ddd;
-                }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            max-height: 200px;
+            overflow-y: auto;
+            width: 100%;
+        }
 
-                .horizontal-container > div {
-                    margin-right: 10px;
-                }
+        .dropdown-content.show {
+            display: block;
+        }
 
-                .main-container {
-                    display: flex;
-                    margin-top: 20px;
-                }
+        .dropdown-content label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
 
-                .vertical-container {
-                    width: 20%;
-                    padding: 10px;
-                    border-right: 1px solid #ddd;
-                }
+        .dropdown-content input[type="checkbox"] {
+            margin-right: 10px;
+        }
 
-                .vertical-container label, 
-                .vertical-container select, 
-                .vertical-container input {
-                    margin-bottom: 10px;
-                    display: block;
-                }
+        .checkbox-row {
+            display: flex;
+            flex-wrap: wrap;
+        }
 
-                /* Dropdown for College Names */
-                .dropdown {
-                    position: relative;
-                    display: inline-block;
-                    width: 100%;
-                }
+        .checkbox-row label {
+            margin-right: 10px;
+        }
+        
+    </style>
+</head>
+<body class="font-sans">
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+            <img src= /images/MargDarshak.png alt="MargDarshak logo" class="h-10">
+        </div>
+    </header>
 
-                .dropdown-btn {
-                    background-color: #007bff;
-                    color: white;
-                    padding: 10px;
-                    border: none;
-                    cursor: pointer;
-                    border-radius: 4px;
-                    width: 100%;
-                    text-align: left;
-                }
+    <main class="container mx-auto px-4 py-8">
+        <nav class="mb-6">
+            <a href="#" class="text-blue-600 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10.707 3.293a1 1 0 010 1.414L6.414 9H17a1 1 0 110 2H6.414l4.293 4.293a1 1 0 11-1.414 1.414l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Back
+            </a>
+        </nav>
 
-                .dropdown-btn:hover {
-                    background-color: #0056b3;
-                }
-
-                /* Dropdown content (hidden by default, shown when clicked) */
-                .dropdown-content {
-                    display: none;
-                    position: absolute;
-                    background-color: #f9f9f9;
-                    padding: 10px;
-                    border-radius: 4px;
-                    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-                    z-index: 1;
-                    max-height: 200px;
-                    overflow-y: auto;
-                    width: 100%;
-                }
-
-                .dropdown-content.show {
-                    display: block;
-                }
-
-                /* Styling for each label inside the dropdown content */
-                .dropdown-content label {
-                    display: flex;
-                    align-items: center;
-                    margin-bottom: 5px; /* Adjust spacing between items as needed */
-                }
-
-                .dropdown-content input[type="checkbox"] {
-                    margin-right: 10px; /* Space between checkbox and label text */
-                }
-
-                .content-container {
-                    flex-grow: 1;
-                    padding: 20px;
-                }
-
-                /* Checkbox row for multi-select checkboxes */
-                .checkbox-row {
-                    display: flex;
-                    flex-wrap: wrap;
-                }
-
-                .checkbox-row label {
-                    margin-right: 10px;
-                }
-
-        </style>
-    </head>
-    
-<body>
-
-    <h2>College Preference Finder</h2>
-
-    <form action="/search" method="POST">
-        <!-- Horizontal Section -->
-        <div class="horizontal-container">
-            <div>
-                <label for="rank">Rank:</label>
-                <input type="number" id="rank" name="rank" required>
-            </div>
-
-            <div>
-                <label for="domicile">Domicile:</label>
-                <select id="domicile" name="domicile" onchange="handleDomicileChange()" required>
-                    <option value='AI'>AI</option>
-                    <option value='Y'>Y</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="caste">Caste:</label>
-                <select id="caste" name="caste" onchange="handleCasteChange()" required></select>
-            </div>
-
-            <div id="class-container">
-                <label for="class">Class:</label>
-                <select id="class" name="class">
-                    <option value='X'>NILL</option>
-                    <option value='H'>Handicapped</option>
-                    <option value='S'>Sainik</option>
-                    <option value='NCC'>NCC</option>
-                    <option value='FF'>FF</option>
-                </select>
-            </div>
-
-            <div id="gender-container">
-                <label for="gender">Gender:</label>
-                <select id="gender" name="gender">
-                    <option value='OP'>OP</option>
-                    <option value='F'>F</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="rank_range">Rank Range:</label>
-                <select name="rank_range" id="rank_range">
-                    <option value="10000">±10k</option>
-                    <option value="20000">±20k</option>
-                    <option value="50000">±50k</option>
-                    <option value="100000">±1 lakh</option>
-                    <option value="200000">±2 lakh</option>
-                    <option value="500000">±5 lakh</option>
-                    <option value="1000000">±10 lakh</option>
-                    <option value="10000000">Till end</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="sort_by">Sort By:</label>
-                <select id="sort_by" name="sort_by">
-                    <option value="closing_rank">Closing Rank</option>
-                    <option value="opening_rank">Opening Rank</option>
-                </select>
-            </div>
+        <div class="text-center mb-8">
+            <img src=/images/MargDarshak.png alt="MargDarshak logo" class="mx-auto mb-4 h-16">
+            <h1 class="text-4xl font-bold mb-2">College Preference Finder</h1>
+            <p class="text-green-600 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                No Hidden Charges, 100% Free
+            </p>
         </div>
 
-        <!-- Main Section -->
-        <div class="main-container">
-            <!-- Vertical Left Section -->
-            <div class="vertical-container">
-                <label>Institute Type:</label>
-                <div class="checkbox-row">
-                    <% instituteTypes.forEach(function(type) { %>
-                        <input type="checkbox" name="institute_type" value="<%= type %>" checked> <label><%= type %></label>
-                    <% }); %>
-                </div><br>
+        <form action="/search" method="POST" class="bg-white shadow-md rounded-lg p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="rank" class="block text-sm font-medium text-gray-700 mb-1">Rank:</label>
+                    <input type="number" id="rank" name="rank" class="w-full px-3 py-2 border border-gray-300 rounded-md" required>
+                </div>
+                <div>
+                    <label for="domicile" class="block text-sm font-medium text-gray-700 mb-1">Domicile:</label>
+                    <select id="domicile" name="domicile" class="w-full px-3 py-2 border border-gray-300 rounded-md" onchange="handleDomicileChange()" required>
+                        <option value='AI'>All India</option>
+                        <option value='Y'>MP Resident</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="caste" class="block text-sm font-medium text-gray-700 mb-1">Caste:</label>
+                    <select id="caste" name="caste" class="w-full px-3 py-2 border border-gray-300 rounded-md" onchange="handleCasteChange()" required></select>
+                </div>
+            </div>
 
-            
-                <label for="city">Select City/Cities:</label>
-                <div class="dropdown">
-                    <button type="button" class="dropdown-btn" onclick="toggleDropdown('cityDropdown')">Select Cities</button>
-                    <div id="cityDropdown" class="dropdown-content">
-                        <input type="checkbox" id="select_all_cities" onclick="toggleAllCities(this)"> <label for="select_all_cities">All</label><br>
-                        <% cities.forEach(function(city) { %>
-                            <label>
-                                <input type="checkbox" name="city[]" value="<%= city %>" id="city_<%= city %>" class="city-checkbox" checked>
-                                <%= city %>
-                            </label><br>
-                        <% }); %>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div id="class-container">
+                    <label for="class" class="block text-sm font-medium text-gray-700 mb-1">Class:</label>
+                    <select id="class" name="class" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value='X'>NILL (X)</option>
+                        <option value='H'>Handicapped (H)</option>
+                        <option value='S'>Sainik (S)</option>
+                        <option value='NCC'>NCC</option>
+                        <option value='FF'>Freedom Fighter (FF)</option>
+                    </select>
+                </div>
+                <div id="gender-container">
+                    <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender:</label>
+                    <select id="gender" name="gender" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value='OP'>Open (OP)</option>
+                        <option value='F'>Female (F)</option>
+                    </select>
+                </div>
+
+
+
+
+                <div>
+                    <label for="categories" class="block text-sm font-medium text-gray-700 mb-1">Select Categories:</label>
+                    <div class="dropdown">
+                        <button type="button" class="dropdown-btn" onclick="toggleDropdown('categoryDropdown')">Select Categories</button>
+                        <div id="categoryDropdown" class="dropdown-content">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="select_all_categories" onclick="toggleAllCategories(this)">
+                                <label for="select_all_categories" class="ml-2">All</label>
+                            </div>
+                            <div id="categoryCheckboxes">
+                              
+                            </div>
+                        </div>
                     </div>
-                </div><br><br>
-
-
-                <label for="college_name">College Name:</label>
-                <div class="dropdown">
-                    <button class="dropdown-btn" type="button" id="collegeDropdown">Select College Names</button>
-                    <div class="dropdown-content checkbox-container" id="collegeDropdownMenu">
+                </div>
+                
+                
+                <script>
+                    // Generate category checkboxes dynamically
+                    function generateCategoryCheckboxes(categories) {
+                        const container = document.getElementById('categoryCheckboxes');
+                        container.innerHTML = '';  // Clear previous checkboxes if any
                     
-                        <label>
-                            <input type="checkbox" id="selectAllColleges"> Select All
-                        </label>
-                        <% collegeNames.forEach(function(name) { %>
-                            <label>
-                                <input type="checkbox" name="college_name[]" value="<%= name %>" class="college-checkbox" checked> <%= name %>
-                            </label>
-                        <% }); %>
-                    </div>
-                </div><br><br>
+                        categories.forEach(category => {
+                            const checkboxContainer = document.createElement('div');
+                            checkboxContainer.classList.add('flex', 'items-center');
+                    
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.name = 'selectedCategories';
+                            checkbox.value = category;
+                            checkbox.id = `category_${category}`;
+                            checkbox.classList.add('category-checkbox');
+                            checkbox.checked = true; // Checked by default
+                    
+                            const label = document.createElement('label');
+                            label.htmlFor = `category_${category}`;
+                            label.textContent = category;
+                            label.classList.add('ml-2');
+                    
+                            checkboxContainer.appendChild(checkbox);
+                            checkboxContainer.appendChild(label);
+                            container.appendChild(checkboxContainer);
+                        });
+                    
+                        initializeSelectAllCategories(); // Initialize "Select All" functionality after checkboxes are generated
+                    }
+                
+                    // Toggle all categories
+                    function toggleAllCategories(checkbox) {
+                        const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+                        categoryCheckboxes.forEach(cb => {
+                            cb.checked = checkbox.checked;
+                            // Trigger change event programmatically
+                            const event = new Event('change');
+                            cb.dispatchEvent(event);
+                        });
+                    }
+                
+                    // If any individual category checkbox is unchecked, uncheck "Select All Categories"
+                    function initializeSelectAllCategories() {
+    const selectAllCategoriesCheckbox = document.getElementById('select_all_categories');
+    const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+    let isSelectAllTriggered = false; // Flag to prevent unnecessary popup when toggling 'All'
+
+    // If all categories are selected, ensure "Select All Categories" is checked
+    const unchecked = Array.from(categoryCheckboxes).some(cb => !cb.checked);
+    if (!unchecked) {
+        selectAllCategoriesCheckbox.checked = true;
+    }
+
+    // Handle "Select All Categories" functionality
+    selectAllCategoriesCheckbox.addEventListener('change', function() {
+        isSelectAllTriggered = true; // Set flag to prevent popup when 'All' is unchecked
+        toggleAllCategories(this);
+        isSelectAllTriggered = false; // Reset flag after the change
+    });
+
+    // Add listeners for individual category checkboxes
+    categoryCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            // If any individual category checkbox is unchecked, uncheck "Select All Categories"
+            if (!this.checked) {
+                selectAllCategoriesCheckbox.checked = false;
+            } else {
+                // If all checkboxes are checked, check the "Select All" option
+                const unchecked = Array.from(categoryCheckboxes).some(cb => !cb.checked);
+                if (!unchecked) {
+                    selectAllCategoriesCheckbox.checked = true;
+                }
+            }
+
+            // Ensure at least one checkbox is checked, but no popup when 'ALL' is toggled
+            const checkedCount = Array.from(categoryCheckboxes).filter(chk => chk.checked).length;
+            if (checkedCount === 0 && !isSelectAllTriggered) {
+                alert('At least one category must be selected.');
+                this.checked = true; // Re-check the checkbox if it was the last one
+            }
+        });
+    });
+
+    // Automatically uncheck all except the first checkbox if 'Select All' is unchecked
+    selectAllCategoriesCheckbox.addEventListener('change', function() {
+        if (!this.checked) {
+            const firstCheckbox = document.querySelector('.category-checkbox');
+            if (firstCheckbox) {
+                // Uncheck all checkboxes
+                categoryCheckboxes.forEach(cb => cb.checked = false);
+
+                // Check only the first checkbox
+                firstCheckbox.checked = true;
+
+                // Trigger change event programmatically for the first checkbox
+                const event = new Event('change');
+                firstCheckbox.dispatchEvent(event);
+            }
+        }
+    });
+}
+
+// Helper function for toggling all categories
+function toggleAllCategories(selectAllCheckbox) {
+    const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+    
+    if (selectAllCheckbox.checked) {
+        // Check all checkboxes if "Select All" is checked
+        categoryCheckboxes.forEach(cb => cb.checked = true);
+    } else {
+        // Uncheck all checkboxes except the first one if "Select All" is unchecked
+        const firstCheckbox = document.querySelector('.category-checkbox');
+        categoryCheckboxes.forEach(cb => cb.checked = false);
+        if (firstCheckbox) {
+            firstCheckbox.checked = true;
+        }
+    }
+}
 
                 
-             <label for="branch">Select Branch/Branches:</label>
-                <div class="dropdown">
-                    <button type="button" class="dropdown-btn" onclick="toggleDropdown('branchDropdown')">Select Branches</button>
-                    <div id="branchDropdown" class="dropdown-content">
-                        <input type="checkbox" id="select_all_branches" onclick="toggleAllBranches(this)"> <label for="select_all_branches">All</label><br>
-                        <% branches.forEach(function(branch) { %>
-                            <label>
-                                <input type="checkbox" name="branch[]" value="<%= branch.branch %>" id="branch_<%= branch.branch %>" class="branch-checkbox" checked>
-                                <%= branch.branch %>
-                            </label><br>
-                        <% }); %>
+                    // Call generate categories when caste, class, or gender are selected
+                    document.getElementById('caste').addEventListener('change', updateCategories);
+                    document.getElementById('class').addEventListener('change', updateCategories);
+                    document.getElementById('gender').addEventListener('change', updateCategories);
+                   
+                   
+                    function updateCategories() {
+    // Ensure the correct values for caste, class, and gender are fetched
+    const caste = document.getElementById('caste').value || 'EWS'; // Default to 'EWS' if empty
+    const classType = document.getElementById('class').value || ''; // No default class, empty if not selected
+    const gender = document.getElementById('gender').value || ''; // No default gender, empty if not selected
+
+    // Make an AJAX call to get the generated categories
+    fetch(`/generate-categories?caste=${caste}&class=${classType}&gender=${gender}`)
+        .then(response => response.json())
+        .then(data => {
+            generateCategoryCheckboxes(data.categories);
+        })
+        .catch(error => console.error('Error fetching categories:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Call updateCategories to generate categories based on default values on page load
+    updateCategories(); // Trigger category generation immediately on page load
+
+    // Set up event listeners for future changes
+    document.getElementById('caste').addEventListener('change', updateCategories);
+    document.getElementById('class').addEventListener('change', updateCategories);
+    document.getElementById('gender').addEventListener('change', updateCategories);
+    document.getElementById('domicile').addEventListener('change', updateCategories);
+
+    initializeSelectAllCategories(); // Initialize "Select All" functionality
+});
+
+
+
+
+                    
+                </script>
+                
+               
+                
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div>
+                    <label for="rank_range" class="block text-sm font-medium text-gray-700 mb-1">Rank Range:</label>
+                    <select name="rank_range" id="rank_range" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="10000000">Start To End</option>
+                        <option value="1000000">±10 lakh</option>
+                        <option value="500000">±5 lakh</option>
+                        <option value="200000">±2 lakh</option>
+                        <option value="100000">±1 lakh</option>
+                        <option value="50000">±50k</option>
+                        <option value="20000">±20k</option>
+                        <option value="10000">±10k</option>
+                        
+                    </select>
+                </div>
+            
+
+            
+                <div>
+                    <label for="sort_by" class="block text-sm font-medium text-gray-700 mb-1">Sort By:</label>
+                    <select id="sort_by" name="sort_by" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="lastYearTrend">Last Year Trend</option>
+                        <option value="closing_rank">Closing Rank</option>
+                        <option value="opening_rank">Opening Rank</option>
+                    </select>
+                </div>
+               
+                <div>
+                    <label for="round" class="block text-sm font-medium text-gray-700 mb-1">Round:</label>
+                    <select id="round" name="round" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="FIRST">FIRST</option>
+                        <option value="UPGRADE">UPGRADE</option>
+                        <option value="SECOND">SECOND</option>
+                        <option value="FIRST&UPGRADE">FIRST & UPGRADE</option>
+                    </select>
+                </div>
+                
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Institute Type:</label>
+                    <div class="checkbox-row">
+                        <div class="flex items-center">
+                            <input type="checkbox" name="institute_type" value="PRIVATE" class="mr-2 institute-checkbox" checked onchange="checkInstituteTypes()">
+                            <label>Private</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" name="institute_type" value="GOVT" class="mr-2 institute-checkbox" checked onchange="checkInstituteTypes()">
+                            <label>Government</label>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input type="checkbox" name="institute_type" value="S.F.I." class="mr-2 institute-checkbox" checked onchange="checkInstituteTypes()">
+                            <label>Self-Financed Institute</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" name="institute_type" value="AIDED" class="mr-2 institute-checkbox" checked onchange="checkInstituteTypes()">
+                            <label>Government Aided</label>
+                        </div>
                     </div>
-                </div><br><br> 
+                </div>
+            
+            
+                <script>
+                function checkInstituteTypes() {
+                    const checkboxes = document.querySelectorAll('.institute-checkbox');
+                    const checkedCount = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
+                
+                    // Check if there are no checkboxes checked
+                    if (checkedCount === 0) {
+                        // Alert the user and set the first checkbox back to checked
+                        alert('At least one option should be selected!');
+                        checkboxes[0].checked = true; // Ensure at least one checkbox remains checked
+                    }
+                }
+                </script>
+                
+                <div>
+                    <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Select City/Cities:</label>
+                    <div class="dropdown">
+                        <button type="button" class="dropdown-btn" onclick="toggleDropdown('cityDropdown')">Select Cities</button>
+                        <div id="cityDropdown" class="dropdown-content">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="select_all_cities" onclick="toggleAllCities(this)">
+                                <label for="select_all_cities" class="ml-2">All</label>
+                            </div>
+                            <% cities.forEach(function(city) { %>
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="city[]" value="<%= city %>" id="city_<%= city %>" class="city-checkbox" checked>
+                                    <label class="ml-2"><%= city %></label>
+                                </div>
+                            <% }); %>
+                        </div>
 
+                    </div>
+                </div>
 
-                <label for="year">Year:</label>
-                <select id="year" name="year">
-                    <% years.forEach(function(year) { %>
-                        <option value="<%= year %>"><%= year %></option>
-                    <% }); %>
-                </select><br>
-
-
-                <label for="round">Round:</label>
-                <select id="round" name="round">
-                    <% rounds.forEach(function(round) { %>
-                        <option value="<%= round %>"><%= round %></option>
-                    <% }); %>
-                </select>
+                
             </div>
 
-            <!-- Content Section -->
-            <div class="content-container">
-                <h3>Search Results</h3>
-                <!-- This is where the search results will be displayed -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label for="college_name" class="block text-sm font-medium text-gray-700 mb-1">College Name:</label>
+                    <div class="dropdown">
+                        <button class="dropdown-btn" type="button" id="collegeDropdown">Select College Names</button>
+                        <div class="dropdown-content" id="collegeDropdownMenu">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="selectAllColleges">
+                                <label for="selectAllColleges" class="ml-2">Select All</label>
+                            </div>
+                            <% collegeNames.forEach(function(name) { %>
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="college_name[]" value="<%= name %>" class="college-checkbox" checked>
+                                    <label class="ml-2"><%= name %></label>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label for="branch" class="block text-sm font-medium text-gray-700 mb-1">Select Branch/Branches:</label>
+                    <div class="dropdown">
+                        <button type="button" class="dropdown-btn" onclick="toggleDropdown('branchDropdown')">Select Branches</button>
+                        <div id="branchDropdown" class="dropdown-content">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="select_all_branches" onclick="toggleAllBranches(this)">
+                                <label for="select_all_branches" class="ml-2">All</label>
+                            </div>
+                            <% branches.sort((a, b) => a.branch.localeCompare(b.branch)).forEach(function(branch) { %>
+                                <div class="flex items-center">
+                                    <input type="checkbox" name="branch[]" value="<%= branch.branch %>" id="branch_<%= branch.branch %>" class="branch-checkbox" checked>
+                                    <label class="ml-2"><%= branch.branch %></label>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <div class="mt-6 text-center">
+                <button type="submit" class="bg-black text-white px-6 py-2 rounded-md">Search</button>
+            </div>
+        </form>
+
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-6 rounded-md">
+            <p class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                Fill all the fields above to get better results
+            </p>
         </div>
-
-        <button type="submit">Search</button>
-    </form>
+    </main>
+</body>
+</html>
 
   <!-- this is domicile change -->
+
+ 
+
+
 
     <script>
         function handleDomicileChange() {
@@ -277,21 +491,21 @@
 
             if (domicile === 'AI') {
                 casteSelect.options.add(new Option('EWS', 'EWS'));
-                casteSelect.options.add(new Option('FW', 'FW'));
+                casteSelect.options.add(new Option('FW (Fee wavier)', 'FW'));
                 casteSelect.options.add(new Option('OBC', 'OBC'));
                 casteSelect.options.add(new Option('SC', 'SC'));
                 casteSelect.options.add(new Option('ST', 'ST'));
-                casteSelect.options.add(new Option('UR', 'UR'));
-                casteSelect.options.add(new Option('JKM', 'JKM'));
-                casteSelect.options.add(new Option('JKR', 'JKR'));
+                casteSelect.options.add(new Option('UR (Unreserved)', 'UR'));
+                casteSelect.options.add(new Option('JKM (Jammu & Kashmir Migrants)', 'JKM'));
+                casteSelect.options.add(new Option('JKR (Jammu & Kashmir Residents)', 'JKR'));
                 casteSelect.options.add(new Option('NTPC', 'NTPC'));
             } else {
                 casteSelect.options.add(new Option('EWS', 'EWS'));
-                casteSelect.options.add(new Option('FW', 'FW'));
+                casteSelect.options.add(new Option('FW (Fee wavier)', 'FW'));
                 casteSelect.options.add(new Option('OBC', 'OBC'));
                 casteSelect.options.add(new Option('SC', 'SC'));
                 casteSelect.options.add(new Option('ST', 'ST'));
-                casteSelect.options.add(new Option('UR', 'UR'));
+                casteSelect.options.add(new Option('UR (Unreserved)', 'UR'));
             }
             handleCasteChange();
         }
@@ -345,54 +559,9 @@
     }
 }
 
-    </script>
 
-<!-- this is city/college/branch codes -->
 
-     <script>   
-        // Toggle all cities
-        function toggleAllCities(checkbox) {
-            const cityCheckboxes = document.querySelectorAll('.city-checkbox');
-            cityCheckboxes.forEach(cb => cb.checked = checkbox.checked);
-        }
-    
-        // Toggle all branches
-        function toggleAllBranches(checkbox) {
-            const branchCheckboxes = document.querySelectorAll('.branch-checkbox');
-            branchCheckboxes.forEach(cb => cb.checked = checkbox.checked);
-        }
-    
-        // If any individual city checkbox is unchecked, uncheck "All"
-        document.querySelectorAll('.city-checkbox').forEach(cb => {
-            cb.addEventListener('change', function() {
-                const allCitiesCheckbox = document.getElementById('select_all_cities');
-                if (!this.checked) {
-                    allCitiesCheckbox.checked = false;
-                } else {
-                    const unchecked = Array.from(document.querySelectorAll('.city-checkbox')).some(cb => !cb.checked);
-                    if (!unchecked) {
-                        allCitiesCheckbox.checked = true;
-                    }
-                }
-            });
-        });
-    
-        // If any individual branch checkbox is unchecked, uncheck "All"
-        document.querySelectorAll('.branch-checkbox').forEach(cb => {
-            cb.addEventListener('change', function() {
-                const allBranchesCheckbox = document.getElementById('select_all_branches');
-                if (!this.checked) {
-                    allBranchesCheckbox.checked = false;
-                } else {
-                    const unchecked = Array.from(document.querySelectorAll('.branch-checkbox')).some(cb => !cb.checked);
-                    if (!unchecked) {
-                        allBranchesCheckbox.checked = true;
-                    }
-                }
-            });
-        });
-
-    document.getElementById('collegeDropdown').addEventListener('click', function() {
+document.getElementById('collegeDropdown').addEventListener('click', function() {
         const dropdownMenu = document.getElementById('collegeDropdownMenu');
         dropdownMenu.classList.toggle('show');  // Toggle 'show' class to open/close the dropdown
     });
@@ -407,379 +576,418 @@
         }
     });
 
-    // Handle "Select All" functionality
-    const selectAllCheckbox = document.getElementById('selectAllColleges');
+    </script>
+
+<!-- this is city/college/branch codes -->
+
+     <script>   
+
+// Toggle all cities
+function toggleAllCities(checkbox) {
+    const cityCheckboxes = document.querySelectorAll('.city-checkbox');
+    cityCheckboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+        // Trigger change event programmatically
+        const event = new Event('change');
+        cb.dispatchEvent(event);
+    });
+}
+
+// Ensure at least one checkbox is checked and manage other functionalities
+function initializeSelectAllCities() {
+    const selectAllCitiesCheckbox = document.getElementById('select_all_cities');
+    const cityCheckboxes = document.querySelectorAll('.city-checkbox');
+    let isSelectAllTriggered = false; // Flag to prevent double popup when "Select All" is unchecked
+
+    // If all cities are selected, ensure "Select All Cities" is checked
+    const unchecked = Array.from(cityCheckboxes).some(cb => !cb.checked);
+    if (!unchecked) {
+        selectAllCitiesCheckbox.checked = true;
+    }
+
+    // Handle "Select All Cities" functionality
+    selectAllCitiesCheckbox.addEventListener('change', function() {
+        isSelectAllTriggered = true; // Set the flag when "Select All" is clicked
+        toggleAllCities(this); // Assuming toggleAllCities is defined elsewhere
+        isSelectAllTriggered = false; // Reset the flag after change
+    });
+
+    // Add listeners for individual city checkboxes
+    cityCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            // If any individual city checkbox is unchecked, uncheck "Select All Cities"
+            if (!this.checked) {
+                selectAllCitiesCheckbox.checked = false;
+            } else {
+                const unchecked = Array.from(cityCheckboxes).some(cb => !cb.checked);
+                if (!unchecked) {
+                    selectAllCitiesCheckbox.checked = true;
+                }
+            }
+
+            // Ensure at least one checkbox is checked, but prevent double popup
+            const checkedCount = Array.from(cityCheckboxes).filter(chk => chk.checked).length;
+
+            // Only show alert if this change wasn't triggered by 'ALL'
+            if (checkedCount === 0 && !isSelectAllTriggered) {
+                alert('At least one city must be selected.');
+                this.checked = true; // Keep the checkbox checked
+            }
+            
+        });
+    });
+
+    // Automatically check the first checkbox if 'All' is unchecked
+    selectAllCitiesCheckbox.addEventListener('change', function() {
+        if (!this.checked) {
+            const firstCheckbox = document.querySelector('.city-checkbox');
+            if (firstCheckbox) {
+                // Uncheck all checkboxes
+                cityCheckboxes.forEach(cb => cb.checked = false);
+
+                // Check only the first checkbox
+                firstCheckbox.checked = true; // Check the first checkbox
+                
+                // Trigger change event programmatically for the first checkbox
+                const event = new Event('change');
+                firstCheckbox.dispatchEvent(event);
+            }
+        }
+    });
+}
+
+
+
+// Call this function to initialize the behavior on page load
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeSelectAllCities();
+});
+
+// Toggle all colleges
+function toggleAllColleges(checkbox) {
     const collegeCheckboxes = document.querySelectorAll('.college-checkbox');
+    collegeCheckboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+        // Trigger change event programmatically
+        const event = new Event('change');
+        cb.dispatchEvent(event);
+    });
+}
 
-    // Toggle selection based on the "Select All" checkbox
-    selectAllCheckbox.addEventListener('change', function() {
-        collegeCheckboxes.forEach(function(checkbox) {
-            checkbox.checked = selectAllCheckbox.checked;  // Select/deselect all checkboxes
+
+// If any individual college checkbox is unchecked, uncheck "All"
+document.querySelectorAll('.college-checkbox').forEach(cb => {
+    cb.addEventListener('change', function() {
+        const selectAllCollegesCheckbox = document.getElementById('selectAllColleges');
+        if (!this.checked) {
+            selectAllCollegesCheckbox.checked = false;
+        } else {
+            const unchecked = Array.from(document.querySelectorAll('.college-checkbox')).some(cb => !cb.checked);
+            if (!unchecked) {
+                selectAllCollegesCheckbox.checked = true;
+            }
+        }
+    });
+});
+
+// Initialize select all colleges after data update (if the checkboxes are dynamic)
+function initializeSelectAllColleges() {
+    const selectAllCollegesCheckbox = document.getElementById('selectAllColleges');
+    const collegeCheckboxes = document.querySelectorAll('.college-checkbox');
+    let isSelectAllTriggered = false; // Flag to prevent double popup when "Select All" is unchecked
+
+    // If all colleges are selected, ensure "Select All" is checked
+    const unchecked = Array.from(collegeCheckboxes).some(cb => !cb.checked);
+    if (!unchecked) {
+        selectAllCollegesCheckbox.checked = true;
+    }
+
+    // Handle "Select All" functionality
+    selectAllCollegesCheckbox.addEventListener('change', function() {
+        isSelectAllTriggered = true; // Set flag when "Select All" is clicked
+        toggleAllColleges(this);
+        isSelectAllTriggered = false; // Reset flag after change
+    });
+
+    // Add listeners for individual college checkboxes
+    collegeCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            // If any individual college checkbox is unchecked, uncheck "Select All Colleges"
+            if (!this.checked) {
+                selectAllCollegesCheckbox.checked = false;
+            } else {
+                const unchecked = Array.from(collegeCheckboxes).some(cb => !cb.checked);
+                if (!unchecked) {
+                    selectAllCollegesCheckbox.checked = true;
+                }
+            }
+
+            // Ensure at least one checkbox is checked, but prevent double popup
+            const checkedCount = Array.from(collegeCheckboxes).filter(chk => chk.checked).length;
+            if (checkedCount === 0 && !isSelectAllTriggered) {
+                alert('At least one college must be selected.');
+                this.checked = true; // Keep the checkbox checked
+            }
         });
     });
 
-    // Handle the case when individual checkboxes are unchecked
-    collegeCheckboxes.forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            // If any college checkbox is unchecked, uncheck "Select All"
-            if (!checkbox.checked) {
-                selectAllCheckbox.checked = false;
+    // Automatically check the first checkbox if 'Select All' is unchecked
+    selectAllCollegesCheckbox.addEventListener('change', function() {
+        if (!this.checked) {
+            const firstCheckbox = document.querySelector('.college-checkbox');
+            if (firstCheckbox) {
+                // Uncheck all checkboxes
+                collegeCheckboxes.forEach(cb => cb.checked = false);
+
+                // Check only the first checkbox
+                firstCheckbox.checked = true; // Check the first checkbox
+                
+                // Trigger change event programmatically for the first checkbox
+                const event = new Event('change');
+                firstCheckbox.dispatchEvent(event);
+            }
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeSelectAllColleges();
+});
+
+// Toggle all branches
+function toggleAllBranches(checkbox) {
+    const branchCheckboxes = document.querySelectorAll('.branch-checkbox');
+    branchCheckboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+        // Trigger change event programmatically
+        const event = new Event('change');
+        cb.dispatchEvent(event);
+    });
+}
+
+
+// If any individual branch checkbox is unchecked, uncheck "Select All Branches"
+function initializeSelectAllBranches() {
+    const selectAllBranchesCheckbox = document.getElementById('select_all_branches');
+    const branchCheckboxes = document.querySelectorAll('.branch-checkbox');
+    let isSelectAllTriggered = false; // Flag to prevent popup for "Select All" uncheck
+
+    // If all branches are selected, ensure "Select All Branches" is checked
+    const unchecked = Array.from(branchCheckboxes).some(cb => !cb.checked);
+    if (!unchecked) {
+        selectAllBranchesCheckbox.checked = true;
+    }
+
+    // Handle "Select All Branches" functionality
+    selectAllBranchesCheckbox.addEventListener('change', function() {
+        isSelectAllTriggered = true; // Set flag when "Select All" is clicked
+        toggleAllBranches(this);
+        isSelectAllTriggered = false; // Reset flag after change
+    });
+
+    // Add listeners for individual branch checkboxes
+    branchCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            // If any individual branch checkbox is unchecked, uncheck "Select All Branches"
+            if (!this.checked) {
+                selectAllBranchesCheckbox.checked = false;
+            } else {
+                const unchecked = Array.from(branchCheckboxes).some(cb => !cb.checked);
+                if (!unchecked) {
+                    selectAllBranchesCheckbox.checked = true;
+                }
             }
 
-            // If all college checkboxes are checked, check "Select All"
-            if (Array.from(collegeCheckboxes).every(cb => cb.checked)) {
-                selectAllCheckbox.checked = true;
+            // Ensure at least one checkbox is checked
+            const checkedCount = Array.from(branchCheckboxes).filter(chk => chk.checked).length;
+            if (checkedCount === 0 && !isSelectAllTriggered) {
+                alert('At least one branch must be selected.');
+                this.checked = true; // Re-check the checkbox if it was the last one
             }
         });
     });
+
+    // Automatically check the first checkbox if 'Select All' is unchecked, without popup
+    selectAllBranchesCheckbox.addEventListener('change', function() {
+        if (!this.checked) {
+            const firstCheckbox = document.querySelector('.branch-checkbox');
+            if (firstCheckbox) {
+                // Uncheck all checkboxes
+                branchCheckboxes.forEach(cb => cb.checked = false);
+
+                // Check only the first checkbox
+                firstCheckbox.checked = true; // Check the first checkbox
+                
+                // Trigger change event programmatically for the first checkbox
+                const event = new Event('change');
+                firstCheckbox.dispatchEvent(event);
+            }
+        }
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeSelectAllBranches()
+});
+
+
      </script>
- 
 
 
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to update cities based on selected institute types
+    function updateCities() {
+        const selectedInstituteTypes = Array.from(document.querySelectorAll('input[name="institute_type"]:checked')).map(cb => cb.value);
+
+        if (selectedInstituteTypes.length === 0) {
+            console.log("No institute types selected.");
+            return;
+        }
+
+        fetch('/update-cities', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ institute_types: selectedInstituteTypes }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            const cityDropdown = document.getElementById('cityDropdown');
+            cityDropdown.innerHTML = `
+                <input type="checkbox" id="select_all_cities" onclick="toggleAllCities(this)"> <label for="select_all_cities">All</label><br>
+            `;
+            data.cities.forEach(city => {
+                cityDropdown.innerHTML += `
+                    <label>
+                        <input type="checkbox" name="city[]" value="${city}" id="city_${city}" class="city-checkbox" checked>
+                        ${city}
+                    </label><br>
+                `;
+            });
+            initializeSelectAllCities();
+            attachCityEventListeners(); // Reattach event listeners for city checkboxes
+            updateColleges(); // Update colleges based on both city and institute type filters
+        })
+        .catch(error => console.error('Error updating cities:', error));
+    }
+
+    // Function to update colleges based on selected cities and institute types
+    function updateColleges() {
+        const selectedInstituteTypes = Array.from(document.querySelectorAll('input[name="institute_type"]:checked')).map(cb => cb.value);
+        const selectedCities = Array.from(document.querySelectorAll('input[name="city[]"]:checked')).map(cb => cb.value);
+
+        if (selectedInstituteTypes.length === 0 || selectedCities.length === 0) {
+            console.log("No institute types or cities selected.");
+            return;
+        }
+
+        fetch('/update-colleges', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ institute_types: selectedInstituteTypes, cities: selectedCities }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            const collegeDropdown = document.getElementById('collegeDropdownMenu');
+            collegeDropdown.innerHTML = `
+                <label>
+                    <input type="checkbox" id="selectAllColleges"> Select All
+                </label>
+            `;
+            data.colleges.forEach(college => {
+                collegeDropdown.innerHTML += `
+                    <label>
+                        <input type="checkbox" name="college_name[]" value="${college}" class="college-checkbox" checked>
+                        ${college}
+                    </label>
+                `;
+            });
+            initializeSelectAllColleges();
+            attachCollegeEventListeners(); // Reattach event listeners for college checkboxes
+            updateBranches(); // Update branches based on new college options
+        })
+        .catch(error => console.error('Error updating colleges:', error));
+    }
+
+
+
+    // Function to update branches based on selected colleges
+    function updateBranches() {
+        const selectedColleges = Array.from(document.querySelectorAll('input[name="college_name[]"]:checked')).map(cb => cb.value);
+
+        if (selectedColleges.length === 0) {
+            console.log("No colleges selected.");
+            return;
+        }
+
+        fetch('/update-branches', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ colleges: selectedColleges }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            const branchDropdown = document.getElementById('branchDropdown');
+            branchDropdown.innerHTML = `
+                <input type="checkbox" id="select_all_branches" onclick="toggleAllBranches(this)"> <label for="select_all_branches">All</label><br>
+            `;
+            data.branches.forEach(branch => {
+                branchDropdown.innerHTML += `
+                    <label>
+                        <input type="checkbox" name="branch[]" value="${branch}" id="branch_${branch}" class="branch-checkbox" checked>
+                        ${branch}
+                    </label><br>
+                `;
+            });
+
+            initializeSelectAllBranches();
+        })
+        .catch(error => console.error('Error updating branches:', error));
+    }
+
+    // Attach event listeners for city checkboxes
+    function attachCityEventListeners() {
+        document.querySelectorAll('input[name="city[]"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateColleges(); // Update colleges when city changes
+            });
+        });
+    }
+
+    // Attach event listeners for college checkboxes
+    function attachCollegeEventListeners() {
+        document.querySelectorAll('input[name="college_name[]"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateBranches(); // Update branches when college changes
+            });
+        });
+    }
+
+    // Attach event listeners to institute type checkboxes
+    document.querySelectorAll('input[name="institute_type"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateCities(); // Update cities when institute type changes
+        });
+    });
+
+    // Initial attachment of city and college event listeners
+    attachCityEventListeners();
+    attachCollegeEventListeners();
+});
+
+
+  </script>
+   
 </body>
 </html>
 
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Search</title>
-    <script>
-        function handleCasteChange() {
-            const caste = document.getElementById('caste').value;
-            const classContainer = document.getElementById('class-container');
-            const genderContainer = document.getElementById('gender-container');
-
-            if (caste === 'EWS') {
-                classContainer.style.display = 'none';
-                genderContainer.style.display = 'none';
-            } else if (caste === 'FW') {
-                classContainer.style.display = 'none';
-                genderContainer.style.display = 'block';
-            } else {
-                classContainer.style.display = 'block';
-                genderContainer.style.display = 'block';
-            }
-        }
-
-        // Initialize form based on default caste selection
-        window.onload = function() {
-            handleCasteChange();
-        };
-    </script>
-</head>
-<body>
-    <h2>Find Colleges Based on Your Rank</h2>
-    <form action="/search" method="POST">
-
-        <label for="rank">Enter Your Rank:</label>
-        <input type="number" id="rank" name="rank" required><br><br>
-
-        <label for="domicile">Select Domicile:</label><br>
-        <select id="domicile" name="domicile">
-            <option value='AI'>AI</option>
-            <option value='Y'>Y</option>
-        </select><br><br>
-
-        <label for="caste">Select Caste:</label><br>
-        <select id="caste" name="caste" onchange="handleCasteChange()">
-            <option value='EWS'>EWS</option>
-            <option value='FW'>FW</option>
-            <option value='OBC'>OBC</option>
-            <option value='SC'>SC</option>
-            <option value='ST'>ST</option>
-            <option value='UR'>UR</option>
-        </select><br><br>
-
-        <div id="class-container">
-            <label for="class">Select Class:</label><br>
-            <select id="class" name="class">
-                <option value='X'>NILL</option>
-                <option value='H'>Handicapped</option>
-                <option value='S'>Sainik</option>
-                <option value='NCC'>NCC</option>
-                <option value='FF'>FF</option>
-            </select><br><br>
-        </div>
-
-        <div id="gender-container">
-            <label for="gender">Select Gender:</label><br>
-            <select id="gender" name="gender">
-                <option value='OP'>OP</option>
-                <option value='F'>F</option>
-            </select><br><br>
-        </div>
-
-        <label for="college_name">College Name:</label>
-        <select id="college_name" name="college_name">
-            <option value="">All</option>
-            <% collegeNames.forEach(function(name) { %>
-                <option value="<%= name %>"><%= name %></option>
-            <% }); %>
-        </select><br><br>
-
-        <label>Institute Type:</label><br>
-        <% instituteTypes.forEach(function(type) { %>
-            <input type="checkbox" name="institute_type" value="<%= type %>" checked> <%= type %><br>
-        <% }); %><br>
-
-        <label>Select City:</label><br>
-        <% cities.forEach(function(city) { %>
-            <input type="checkbox" name="city" value="<%= city %>" checked> <%= city %><br>
-        <% }); %><br>
-
-        <label for="year">Select Year:</label><br>
-        <select id="year" name="year">
-            <% years.forEach(function(year) { %>
-                <option value="<%= year %>"><%= year %></option>
-            <% }); %>
-        </select><br><br>
-
-        <label for="round">Select Round:</label><br>
-        <select id="round" name="round">
-            <% rounds.forEach(function(round) { %>
-                <option value="<%= round %>"><%= round %></option>
-            <% }); %>
-        </select><br><br>
-
-        <label for="rank_range">Select Rank Range:</label><br>
-        <select name="rank_range" id="rank_range">
-            <option value="10000">±10k</option>
-            <option value="20000">±20k</option>
-            <option value="50000">±50k</option>
-            <option value="100000">±1 lakh</option>
-            <option value="200000">±2 lakh</option>
-            <option value="500000">±5 lakh</option>
-            <option value="1000000">±10 lakh</option>
-            <option value="10000000">Till end</option>
-        </select><br><br>
-
-        <button type="submit">Search Colleges</button>
-    </form>
-</body>
-</html> -->
-
-<!-- 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Search</title>
-</head>
-<body>
-    <h2>Find Colleges Based on Your Rank</h2>
-    <form action="/search" method="POST">
-
-        <label for="rank">Enter Your Rank:</label>
-        <input type="number" id="rank" name="rank" required><br><br>
-
-        <label for="domicile">Select Domicile:</label><br>
-        <select id="domicile" name="domicile">
-            <option value='AI'>AI</option>
-            <option value='Y'>Y</option>
-        </select><br><br>
-
-        <label for="caste">Select Caste:</label><br>
-        <select id="caste" name="caste">
-            <option value='EWS'>EWS</option>
-            <option value='FW'>FW</option>
-            <option value='OBC'>OBC</option>
-            <option value='SC'>SC</option>
-            <option value='ST'>ST</option>
-            <option value='UR'>UR</option>
-        </select><br><br>
-
-        <label for="class">Select Class:</label><br>
-        <select id="class" name="class">
-            <option value='X'>NILL</option>
-            <option value='H'>Handicapped</option>
-            <option value='S'>Sainik</option>
-            <option value='NCC'>NCC</option>
-            <option value='FF'>FF</option>
-        </select><br><br>
-
-        <label for="gender">Select Gender:</label><br>
-        <select id="gender" name="gender">
-            <option value='OP'>OP</option>
-            <option value='F'>F</option>
-        </select><br><br>
-
-        <label for="college_name">College Name:</label>
-        <select id="college_name" name="college_name">
-            <option value="">All</option>
-            <% collegeNames.forEach(function(name) { %>
-                <option value="<%= name %>"><%= name %></option>
-            <% }); %>
-        </select><br><br>
-
-        <label>Institute Type:</label><br>
-        <% instituteTypes.forEach(function(type) { %>
-            <input type="checkbox" name="institute_type" value="<%= type %>" checked> <%= type %><br>
-        <% }); %><br>
-
-        <label>Select City:</label><br>
-        <% cities.forEach(function(city) { %>
-            <input type="checkbox" name="city" value="<%= city %>" checked> <%= city %><br>
-        <% }); %><br>
-
-        <label for="year">Select Year:</label><br>
-        <select id="year" name="year">
-            <% years.forEach(function(year) { %>
-                <option value="<%= year %>"><%= year %></option>
-            <% }); %>
-        </select><br><br>
-
-        <label for="round">Select Round:</label><br>
-        <select id="round" name="round">
-            <% rounds.forEach(function(round) { %>
-                <option value="<%= round %>"><%= round %></option>
-            <% }); %>
-        </select><br><br>
-
-        <label for="rank_range">Select Rank Range:</label><br>
-        <select name="rank_range" id="rank_range">
-            <option value="10000">±10k</option>
-            <option value="20000">±20k</option>
-            <option value="50000">±50k</option>
-            <option value="100000">±1 lakh</option>
-            <option value="200000">±2 lakh</option>
-            <option value="500000">±5 lakh</option>
-            <option value="1000000">±10 lakh</option>
-            <option value="10000000">Till end</option>
-        </select><br><br>
-
-        <button type="submit">Search Colleges</button>
-    </form>
-</body>
-</html> -->
-
-
-
-<!-- 
-  <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>College Search</title>
-     <script>
-        function updateCategories() {
-            const domicileSelect = document.getElementById('domicile');
-            const categorySelect = document.getElementById('category');
-
-            // List of all categories
-            const allCategories = [
-                'EWS', 'FW/OP', 'OBC/X/OP', 'SC/X/OP', 'ST/X/OP', 'UR/X/OP', 'OBC/X/F', 'SC/X/F',
-                'UR/X/F', 'UR/S/OP', 'ST/X/F', 'JKM', 'JKR', 'OBC/H/OP', 'UR/H/OP', 'OBC/S/OP',
-                'SC/S/OP', 'UR/NCC/F', 'UR/S/F', 'OBC/FF/OP', 'OBC/S/F', 'SC/H/OP', 'UR/FF/F',
-                'UR/NCC/OP', 'OBC/FF/F', 'UR/FF/OP', 'UR/H/F', 'OBC/H/F', 'SC/NCC/OP', 'OBC/NCC/OP',
-                'NTPC'
-            ];
-
-            const AICategories = ['UR/X/OP','JKM', 'JKR','UR/S/OP','NTPC'];
-            const excludedCategories = ['NTPC', 'JKM', 'JKR', 'UR/S/OP'];
-
-            let visibleCategories;
-
-            if (domicileSelect.value === 'AI') {
-                visibleCategories = AICategories;
-            } else if (domicileSelect.value === 'Y') {
-                visibleCategories = allCategories.filter(cat => !excludedCategories.includes(cat));
-            }
-
-            // Clear existing options
-            categorySelect.innerHTML = '';
-
-            // Add the visible categories to the select element
-            visibleCategories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category;
-                option.text = category;
-                categorySelect.add(option);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const domicileSelect = document.getElementById('domicile');
-            domicileSelect.addEventListener('change', updateCategories);
-
-            // Initialize the categories visibility
-            updateCategories();
-        });
-    </script>
-</head>
-<body>
-    <h2>Find Colleges Based on Your Rank</h2>
-    <form action="/search" method="POST">
-
-        <label for="rank">Enter Your Rank:</label>
-         <input type="number" id="rank" name="rank" required><br><br>
-    
-       <label for="domicile">Select Domicile:</label><br>
-        <select id="domicile" name="domicile">
-            <option value='AI'>AI</option>
-            <option value='Y'>Y</option>
-        </select><br><br>
-
-       
-        <label for="category">Select Your Category:</label><br>
-        <select id="category" name="category">
-             
-        </select><br><br>
-
-       
-        <label for="college_name">College Name:</label>
-        <select id="college_name" name="college_name">
-            <option value="">All</option>
-            <% collegeNames.forEach(function(name) { %>
-                <option value="<%= name %>"><%= name %></option>
-            <% }); %>
-        </select><br><br>
-
-     
-        <label>Institute Type:</label><br>
-        <% instituteTypes.forEach(function(type) { %>
-            <input type="checkbox" name="institute_type" value="<%= type %>" checked> <%= type %><br>
-        <% }); %><br>
-
-       
-        <label>Select City:</label><br>
-        <% cities.forEach(function(city) { %>
-            <input type="checkbox" name="city" value="<%= city %>" checked> <%= city %><br>
-        <% }); %><br>
-
-     
-        <label for="year">Select Year:</label><br>
-        <select id="year" name="year">
-            <% years.forEach(function(year) { %>
-                <option value="<%= year %>"><%= year %></option>
-            <% }); %>
-        </select><br><br>
-
-     
-        <label for="round">Select Round:</label><br>
-        <select id="round" name="round">
-            <% rounds.forEach(function(round) { %>
-                <option value="<%= round %>"><%= round %></option>
-            <% }); %>
-        </select><br><br>
-
-       
-        <label for="rank_range">Select Rank Range:</label><br>
-        <select name="rank_range" id="rank_range">
-            <option value="10000">±10k</option>
-            <option value="20000">±20k</option>
-            <option value="50000">±50k</option>
-            <option value="100000">±1 lakh</option>
-            <option value="200000">±2 lakh</option>
-            <option value="500000">±5 lakh</option>
-            <option value="1000000">±10 lakh</option>
-            <option value="10000000">Till end</option>
-        </select><br><br>
-
-        <button type="submit">Search Colleges</button>
-    </form>
-</body>
-</html> -->
