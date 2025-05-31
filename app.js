@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '##sBi123',
+    password: '-----',
     database: 'clg_predictor'
 });
 
