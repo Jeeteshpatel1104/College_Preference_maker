@@ -5,19 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>College Preference Finder</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- ==================== -->
+    <!--        STYLES         #bfbec9-->
+    <!-- ==================== -->
     <style>
         body {
-            background-color: #f1efe7;
+            background-color: #e3e3ed;
+            background-image: 
+                linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px; /* controls grid spacing */
         }
-        
+    
         .dropdown {
             position: relative;
             display: inline-block;
             width: 100%;
         }
-
+    
         .dropdown-btn {
-            background-color:#f1efe7;
+            background-color: #f3f4f6;
             color: rgb(0, 0, 0);
             padding: 10px;
             border: none;
@@ -26,11 +34,11 @@
             width: 100%;
             text-align: left;
         }
-
+    
         .dropdown-btn:hover {
             background-color: #ffffff;
         }
-
+    
         .dropdown-content {
             display: none;
             position: absolute;
@@ -43,39 +51,53 @@
             overflow-y: auto;
             width: 100%;
         }
-
+    
         .dropdown-content.show {
             display: block;
         }
-
+    
         .dropdown-content label {
             display: flex;
             align-items: center;
             margin-bottom: 5px;
         }
-
+    
         .dropdown-content input[type="checkbox"] {
             margin-right: 10px;
         }
-
+    
         .checkbox-row {
             display: flex;
             flex-wrap: wrap;
         }
-
+    
         .checkbox-row label {
             margin-right: 10px;
         }
-        
     </style>
+    
 </head>
+
 <body class="font-sans">
+    <!-- ==================== -->
+    <!--        HEADER         -->
+    <!-- ==================== -->
     <header class="bg-white shadow-sm">
         <div class="container mx-auto px-4 py-2 flex justify-between items-center">
-            <img src= /images/MargDarshak.png alt="MargDarshak logo" class="h-10">
+            <img src="/images/MargDarshak.png" alt="MargDarshak logo" class="h-10">
+
+            <% if (locals.user) { %>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">Welcome, <%= user.name %></span>
+                    <a href="/logout" class="text-sm text-blue-600 hover:text-blue-800">Logout</a>
+                </div>
+            <% } %>
         </div>
     </header>
 
+    <!-- ==================== -->
+    <!--        MAIN           -->
+    <!-- ==================== -->
     <main class="container mx-auto px-4 py-8">
         <nav class="mb-6">
             <a href="#" class="text-blue-600 flex items-center">
@@ -87,7 +109,7 @@
         </nav>
 
         <div class="text-center mb-8">
-            <img src=/images/MargDarshak.png alt="MargDarshak logo" class="mx-auto mb-4 h-16">
+            <img src="/images/MargDarshak.png" alt="MargDarshak logo" class="mx-auto mb-4 h-16">
             <h1 class="text-4xl font-bold mb-2">College Preference Finder</h1>
             <p class="text-green-600 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -97,7 +119,11 @@
             </p>
         </div>
 
+        <!-- ==================== -->
+        <!--        FORM           -->
+        <!-- ==================== -->
         <form action="/search" method="POST" class="bg-white shadow-md rounded-lg p-6">
+            <!-- Rank/Domicile/Caste Row -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label for="rank" class="block text-sm font-medium text-gray-700 mb-1">Rank:</label>
@@ -116,6 +142,7 @@
                 </div>
             </div>
 
+            <!-- Class/Gender/Categories Row -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <div id="class-container">
                     <label for="class" class="block text-sm font-medium text-gray-700 mb-1">Class:</label>
@@ -134,10 +161,6 @@
                         <option value='F'>Female (F)</option>
                     </select>
                 </div>
-
-
-
-
                 <div>
                     <label for="categories" class="block text-sm font-medium text-gray-700 mb-1">Select Categories:</label>
                     <div class="dropdown">
@@ -147,179 +170,13 @@
                                 <input type="checkbox" id="select_all_categories" onclick="toggleAllCategories(this)">
                                 <label for="select_all_categories" class="ml-2">All</label>
                             </div>
-                            <div id="categoryCheckboxes">
-                              
-                            </div>
+                            <div id="categoryCheckboxes"></div>
                         </div>
                     </div>
                 </div>
-                
-                
-                <script>
-                    // Generate category checkboxes dynamically
-                    function generateCategoryCheckboxes(categories) {
-                        const container = document.getElementById('categoryCheckboxes');
-                        container.innerHTML = '';  // Clear previous checkboxes if any
-                    
-                        categories.forEach(category => {
-                            const checkboxContainer = document.createElement('div');
-                            checkboxContainer.classList.add('flex', 'items-center');
-                    
-                            const checkbox = document.createElement('input');
-                            checkbox.type = 'checkbox';
-                            checkbox.name = 'selectedCategories';
-                            checkbox.value = category;
-                            checkbox.id = `category_${category}`;
-                            checkbox.classList.add('category-checkbox');
-                            checkbox.checked = true; // Checked by default
-                    
-                            const label = document.createElement('label');
-                            label.htmlFor = `category_${category}`;
-                            label.textContent = category;
-                            label.classList.add('ml-2');
-                    
-                            checkboxContainer.appendChild(checkbox);
-                            checkboxContainer.appendChild(label);
-                            container.appendChild(checkboxContainer);
-                        });
-                    
-                        initializeSelectAllCategories(); // Initialize "Select All" functionality after checkboxes are generated
-                    }
-                
-                    // Toggle all categories
-                    function toggleAllCategories(checkbox) {
-                        const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-                        categoryCheckboxes.forEach(cb => {
-                            cb.checked = checkbox.checked;
-                            // Trigger change event programmatically
-                            const event = new Event('change');
-                            cb.dispatchEvent(event);
-                        });
-                    }
-                
-                    // If any individual category checkbox is unchecked, uncheck "Select All Categories"
-                    function initializeSelectAllCategories() {
-    const selectAllCategoriesCheckbox = document.getElementById('select_all_categories');
-    const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-    let isSelectAllTriggered = false; // Flag to prevent unnecessary popup when toggling 'All'
-
-    // If all categories are selected, ensure "Select All Categories" is checked
-    const unchecked = Array.from(categoryCheckboxes).some(cb => !cb.checked);
-    if (!unchecked) {
-        selectAllCategoriesCheckbox.checked = true;
-    }
-
-    // Handle "Select All Categories" functionality
-    selectAllCategoriesCheckbox.addEventListener('change', function() {
-        isSelectAllTriggered = true; // Set flag to prevent popup when 'All' is unchecked
-        toggleAllCategories(this);
-        isSelectAllTriggered = false; // Reset flag after the change
-    });
-
-    // Add listeners for individual category checkboxes
-    categoryCheckboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            // If any individual category checkbox is unchecked, uncheck "Select All Categories"
-            if (!this.checked) {
-                selectAllCategoriesCheckbox.checked = false;
-            } else {
-                // If all checkboxes are checked, check the "Select All" option
-                const unchecked = Array.from(categoryCheckboxes).some(cb => !cb.checked);
-                if (!unchecked) {
-                    selectAllCategoriesCheckbox.checked = true;
-                }
-            }
-
-            // Ensure at least one checkbox is checked, but no popup when 'ALL' is toggled
-            const checkedCount = Array.from(categoryCheckboxes).filter(chk => chk.checked).length;
-            if (checkedCount === 0 && !isSelectAllTriggered) {
-                alert('At least one category must be selected.');
-                this.checked = true; // Re-check the checkbox if it was the last one
-            }
-        });
-    });
-
-    // Automatically uncheck all except the first checkbox if 'Select All' is unchecked
-    selectAllCategoriesCheckbox.addEventListener('change', function() {
-        if (!this.checked) {
-            const firstCheckbox = document.querySelector('.category-checkbox');
-            if (firstCheckbox) {
-                // Uncheck all checkboxes
-                categoryCheckboxes.forEach(cb => cb.checked = false);
-
-                // Check only the first checkbox
-                firstCheckbox.checked = true;
-
-                // Trigger change event programmatically for the first checkbox
-                const event = new Event('change');
-                firstCheckbox.dispatchEvent(event);
-            }
-        }
-    });
-}
-
-// Helper function for toggling all categories
-function toggleAllCategories(selectAllCheckbox) {
-    const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-    
-    if (selectAllCheckbox.checked) {
-        // Check all checkboxes if "Select All" is checked
-        categoryCheckboxes.forEach(cb => cb.checked = true);
-    } else {
-        // Uncheck all checkboxes except the first one if "Select All" is unchecked
-        const firstCheckbox = document.querySelector('.category-checkbox');
-        categoryCheckboxes.forEach(cb => cb.checked = false);
-        if (firstCheckbox) {
-            firstCheckbox.checked = true;
-        }
-    }
-}
-
-                
-                    // Call generate categories when caste, class, or gender are selected
-                    document.getElementById('caste').addEventListener('change', updateCategories);
-                    document.getElementById('class').addEventListener('change', updateCategories);
-                    document.getElementById('gender').addEventListener('change', updateCategories);
-                   
-                   
-                    function updateCategories() {
-    // Ensure the correct values for caste, class, and gender are fetched
-    const caste = document.getElementById('caste').value || 'EWS'; // Default to 'EWS' if empty
-    const classType = document.getElementById('class').value || ''; // No default class, empty if not selected
-    const gender = document.getElementById('gender').value || ''; // No default gender, empty if not selected
-
-    // Make an AJAX call to get the generated categories
-    fetch(`/generate-categories?caste=${caste}&class=${classType}&gender=${gender}`)
-        .then(response => response.json())
-        .then(data => {
-            generateCategoryCheckboxes(data.categories);
-        })
-        .catch(error => console.error('Error fetching categories:', error));
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Call updateCategories to generate categories based on default values on page load
-    updateCategories(); // Trigger category generation immediately on page load
-
-    // Set up event listeners for future changes
-    document.getElementById('caste').addEventListener('change', updateCategories);
-    document.getElementById('class').addEventListener('change', updateCategories);
-    document.getElementById('gender').addEventListener('change', updateCategories);
-    document.getElementById('domicile').addEventListener('change', updateCategories);
-
-    initializeSelectAllCategories(); // Initialize "Select All" functionality
-});
-
-
-
-
-                    
-                </script>
-                
-               
-                
             </div>
 
+            <!-- Rank Range/Sort By/Round Row -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <div>
                     <label for="rank_range" class="block text-sm font-medium text-gray-700 mb-1">Rank Range:</label>
@@ -332,12 +189,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <option value="50000">±50k</option>
                         <option value="20000">±20k</option>
                         <option value="10000">±10k</option>
-                        
                     </select>
                 </div>
-            
-
-            
                 <div>
                     <label for="sort_by" class="block text-sm font-medium text-gray-700 mb-1">Sort By:</label>
                     <select id="sort_by" name="sort_by" class="w-full px-3 py-2 border border-gray-300 rounded-md">
@@ -346,7 +199,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <option value="opening_rank">Opening Rank</option>
                     </select>
                 </div>
-               
                 <div>
                     <label for="round" class="block text-sm font-medium text-gray-700 mb-1">Round:</label>
                     <select id="round" name="round" class="w-full px-3 py-2 border border-gray-300 rounded-md">
@@ -356,9 +208,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <option value="FIRST&UPGRADE">FIRST & UPGRADE</option>
                     </select>
                 </div>
-                
             </div>
 
+            <!-- Institute Type/City Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Institute Type:</label>
@@ -371,7 +223,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             <input type="checkbox" name="institute_type" value="GOVT" class="mr-2 institute-checkbox" checked onchange="checkInstituteTypes()">
                             <label>Government</label>
                         </div>
-                        
                         <div class="flex items-center">
                             <input type="checkbox" name="institute_type" value="S.F.I." class="mr-2 institute-checkbox" checked onchange="checkInstituteTypes()">
                             <label>Self-Financed Institute</label>
@@ -382,22 +233,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 </div>
-            
-            
-                <script>
-                function checkInstituteTypes() {
-                    const checkboxes = document.querySelectorAll('.institute-checkbox');
-                    const checkedCount = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
-                
-                    // Check if there are no checkboxes checked
-                    if (checkedCount === 0) {
-                        // Alert the user and set the first checkbox back to checked
-                        alert('At least one option should be selected!');
-                        checkboxes[0].checked = true; // Ensure at least one checkbox remains checked
-                    }
-                }
-                </script>
-                
                 <div>
                     <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Select City/Cities:</label>
                     <div class="dropdown">
@@ -414,13 +249,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             <% }); %>
                         </div>
-
                     </div>
                 </div>
-
-                
             </div>
 
+            <!-- College/Branch Row -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div>
                     <label for="college_name" class="block text-sm font-medium text-gray-700 mb-1">College Name:</label>
@@ -460,11 +293,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
 
+            <!-- Submit Button -->
             <div class="mt-6 text-center">
                 <button type="submit" class="bg-black text-white px-6 py-2 rounded-md">Search</button>
             </div>
         </form>
 
+        <!-- Info Box -->
         <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-6 rounded-md">
             <p class="flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -474,16 +309,14 @@ document.addEventListener('DOMContentLoaded', function() {
             </p>
         </div>
     </main>
-</body>
-</html>
 
-  <!-- this is domicile change -->
-
- 
-
-
-
+    <!-- ==================== -->
+    <!--        SCRIPTS        -->
+    <!-- ==================== -->
     <script>
+        // ==========================================
+        // DOMICILE & CASTE HANDLING
+        // ==========================================
         function handleDomicileChange() {
             const domicile = document.getElementById('domicile').value;
             const casteSelect = document.getElementById('caste');
@@ -527,467 +360,500 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        window.onload = function() {
-            handleDomicileChange();
-        };
-    </script>
+        // ==========================================
+        // DROPDOWN TOGGLES
+        // ==========================================
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.classList.toggle('show');
+        }
 
-<!-- this is dropdown code -->
-
-    <script>
-        
-       // Toggle dropdown visibility
-           function toggleDropdown(dropdownId) {
-               const dropdown = document.getElementById(dropdownId);
-               dropdown.classList.toggle('show');
-            }
-
-    
-        // Close the dropdown if the user clicks outside of it
+        // Close dropdowns when clicking outside
         window.onclick = function(event) {
             if (!event.target.matches('.dropdown-btn')) {
-               const dropdowns = document.getElementsByClassName('dropdown-content');
-               for (let i = 0; i < dropdowns.length; i++) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < dropdowns.length; i++) {
                     const openDropdown = dropdowns[i];
-                   if (openDropdown.classList.contains('show')) {
-                // Check if the click is not within the dropdown
-                   if (!openDropdown.contains(event.target)) {
-                    openDropdown.classList.remove('show');
+                    if (openDropdown.classList.contains('show')) {
+                        if (!openDropdown.contains(event.target)) {
+                            openDropdown.classList.remove('show');
+                        }
+                    }
                 }
             }
         }
-    }
-}
 
-
-
-document.getElementById('collegeDropdown').addEventListener('click', function() {
-        const dropdownMenu = document.getElementById('collegeDropdownMenu');
-        dropdownMenu.classList.toggle('show');  // Toggle 'show' class to open/close the dropdown
-    });
-
-    // Close dropdown if clicked outside of it
-    document.addEventListener('click', function(e) {
-        const dropdownMenu = document.getElementById('collegeDropdownMenu');
-        const dropdownButton = document.getElementById('collegeDropdown');
-        
-        if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
-            dropdownMenu.classList.remove('show');
-        }
-    });
-
-    </script>
-
-<!-- this is city/college/branch codes -->
-
-     <script>   
-
-// Toggle all cities
-function toggleAllCities(checkbox) {
-    const cityCheckboxes = document.querySelectorAll('.city-checkbox');
-    cityCheckboxes.forEach(cb => {
-        cb.checked = checkbox.checked;
-        // Trigger change event programmatically
-        const event = new Event('change');
-        cb.dispatchEvent(event);
-    });
-}
-
-// Ensure at least one checkbox is checked and manage other functionalities
-function initializeSelectAllCities() {
-    const selectAllCitiesCheckbox = document.getElementById('select_all_cities');
-    const cityCheckboxes = document.querySelectorAll('.city-checkbox');
-    let isSelectAllTriggered = false; // Flag to prevent double popup when "Select All" is unchecked
-
-    // If all cities are selected, ensure "Select All Cities" is checked
-    const unchecked = Array.from(cityCheckboxes).some(cb => !cb.checked);
-    if (!unchecked) {
-        selectAllCitiesCheckbox.checked = true;
-    }
-
-    // Handle "Select All Cities" functionality
-    selectAllCitiesCheckbox.addEventListener('change', function() {
-        isSelectAllTriggered = true; // Set the flag when "Select All" is clicked
-        toggleAllCities(this); // Assuming toggleAllCities is defined elsewhere
-        isSelectAllTriggered = false; // Reset the flag after change
-    });
-
-    // Add listeners for individual city checkboxes
-    cityCheckboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            // If any individual city checkbox is unchecked, uncheck "Select All Cities"
-            if (!this.checked) {
-                selectAllCitiesCheckbox.checked = false;
-            } else {
-                const unchecked = Array.from(cityCheckboxes).some(cb => !cb.checked);
-                if (!unchecked) {
-                    selectAllCitiesCheckbox.checked = true;
-                }
-            }
-
-            // Ensure at least one checkbox is checked, but prevent double popup
-            const checkedCount = Array.from(cityCheckboxes).filter(chk => chk.checked).length;
-
-            // Only show alert if this change wasn't triggered by 'ALL'
-            if (checkedCount === 0 && !isSelectAllTriggered) {
-                alert('At least one city must be selected.');
-                this.checked = true; // Keep the checkbox checked
-            }
-            
+        // College dropdown specific handling
+        document.getElementById('collegeDropdown').addEventListener('click', function() {
+            const dropdownMenu = document.getElementById('collegeDropdownMenu');
+            dropdownMenu.classList.toggle('show');
         });
-    });
 
-    // Automatically check the first checkbox if 'All' is unchecked
-    selectAllCitiesCheckbox.addEventListener('change', function() {
-        if (!this.checked) {
-            const firstCheckbox = document.querySelector('.city-checkbox');
-            if (firstCheckbox) {
-                // Uncheck all checkboxes
-                cityCheckboxes.forEach(cb => cb.checked = false);
+        document.addEventListener('click', function(e) {
+            const dropdownMenu = document.getElementById('collegeDropdownMenu');
+            const dropdownButton = document.getElementById('collegeDropdown');
+            
+            if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+        });
 
-                // Check only the first checkbox
-                firstCheckbox.checked = true; // Check the first checkbox
-                
-                // Trigger change event programmatically for the first checkbox
+        // ==========================================
+        // CATEGORY HANDLING
+        // ==========================================
+        function generateCategoryCheckboxes(categories) {
+            const container = document.getElementById('categoryCheckboxes');
+            container.innerHTML = '';  // Clear previous checkboxes
+            
+            categories.forEach(category => {
+                const checkboxContainer = document.createElement('div');
+                checkboxContainer.classList.add('flex', 'items-center');
+            
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'selectedCategories';
+                checkbox.value = category;
+                checkbox.id = `category_${category}`;
+                checkbox.classList.add('category-checkbox');
+                checkbox.checked = true;
+            
+                const label = document.createElement('label');
+                label.htmlFor = `category_${category}`;
+                label.textContent = category;
+                label.classList.add('ml-2');
+            
+                checkboxContainer.appendChild(checkbox);
+                checkboxContainer.appendChild(label);
+                container.appendChild(checkboxContainer);
+            });
+            
+            initializeSelectAllCategories();
+        }
+
+        function toggleAllCategories(checkbox) {
+            const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+            categoryCheckboxes.forEach(cb => {
+                cb.checked = checkbox.checked;
                 const event = new Event('change');
-                firstCheckbox.dispatchEvent(event);
+                cb.dispatchEvent(event);
+            });
+        }
+
+        function initializeSelectAllCategories() {
+            const selectAllCategoriesCheckbox = document.getElementById('select_all_categories');
+            const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+            let isSelectAllTriggered = false;
+
+            const unchecked = Array.from(categoryCheckboxes).some(cb => !cb.checked);
+            if (!unchecked) {
+                selectAllCategoriesCheckbox.checked = true;
+            }
+
+            selectAllCategoriesCheckbox.addEventListener('change', function() {
+                isSelectAllTriggered = true;
+                toggleAllCategories(this);
+                isSelectAllTriggered = false;
+            });
+
+            categoryCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if (!this.checked) {
+                        selectAllCategoriesCheckbox.checked = false;
+                    } else {
+                        const unchecked = Array.from(categoryCheckboxes).some(cb => !cb.checked);
+                        if (!unchecked) {
+                            selectAllCategoriesCheckbox.checked = true;
+                        }
+                    }
+
+                    const checkedCount = Array.from(categoryCheckboxes).filter(chk => chk.checked).length;
+                    if (checkedCount === 0 && !isSelectAllTriggered) {
+                        alert('At least one category must be selected.');
+                        this.checked = true;
+                    }
+                });
+            });
+
+            selectAllCategoriesCheckbox.addEventListener('change', function() {
+                if (!this.checked) {
+                    const firstCheckbox = document.querySelector('.category-checkbox');
+                    if (firstCheckbox) {
+                        categoryCheckboxes.forEach(cb => cb.checked = false);
+                        firstCheckbox.checked = true;
+                        const event = new Event('change');
+                        firstCheckbox.dispatchEvent(event);
+                    }
+                }
+            });
+        }
+
+        function updateCategories() {
+            const caste = document.getElementById('caste').value || 'EWS';
+            const classType = document.getElementById('class').value || '';
+            const gender = document.getElementById('gender').value || '';
+
+            fetch(`/generate-categories?caste=${caste}&class=${classType}&gender=${gender}`)
+                .then(response => response.json())
+                .then(data => {
+                    generateCategoryCheckboxes(data.categories);
+                })
+                .catch(error => console.error('Error fetching categories:', error));
+        }
+
+        // ==========================================
+        // INSTITUTE TYPE HANDLING
+        // ==========================================
+        function checkInstituteTypes() {
+            const checkboxes = document.querySelectorAll('.institute-checkbox');
+            const checkedCount = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
+        
+            if (checkedCount === 0) {
+                alert('At least one option should be selected!');
+                checkboxes[0].checked = true;
             }
         }
-    });
-}
 
+        // ==========================================
+        // CITY HANDLING
+        // ==========================================
+        function toggleAllCities(checkbox) {
+            const cityCheckboxes = document.querySelectorAll('.city-checkbox');
+            cityCheckboxes.forEach(cb => {
+                cb.checked = checkbox.checked;
+                const event = new Event('change');
+                cb.dispatchEvent(event);
+            });
+        }
 
+        function initializeSelectAllCities() {
+            const selectAllCitiesCheckbox = document.getElementById('select_all_cities');
+            const cityCheckboxes = document.querySelectorAll('.city-checkbox');
+            let isSelectAllTriggered = false;
 
-// Call this function to initialize the behavior on page load
+            const unchecked = Array.from(cityCheckboxes).some(cb => !cb.checked);
+            if (!unchecked) {
+                selectAllCitiesCheckbox.checked = true;
+            }
 
+            selectAllCitiesCheckbox.addEventListener('change', function() {
+                isSelectAllTriggered = true;
+                toggleAllCities(this);
+                isSelectAllTriggered = false;
+            });
 
-document.addEventListener('DOMContentLoaded', function() {
-    initializeSelectAllCities();
-});
+            cityCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if (!this.checked) {
+                        selectAllCitiesCheckbox.checked = false;
+                    } else {
+                        const unchecked = Array.from(cityCheckboxes).some(cb => !cb.checked);
+                        if (!unchecked) {
+                            selectAllCitiesCheckbox.checked = true;
+                        }
+                    }
 
-// Toggle all colleges
-function toggleAllColleges(checkbox) {
-    const collegeCheckboxes = document.querySelectorAll('.college-checkbox');
-    collegeCheckboxes.forEach(cb => {
-        cb.checked = checkbox.checked;
-        // Trigger change event programmatically
-        const event = new Event('change');
-        cb.dispatchEvent(event);
-    });
-}
+                    const checkedCount = Array.from(cityCheckboxes).filter(chk => chk.checked).length;
+                    if (checkedCount === 0 && !isSelectAllTriggered) {
+                        alert('At least one city must be selected.');
+                        this.checked = true;
+                    }
+                });
+            });
 
+            selectAllCitiesCheckbox.addEventListener('change', function() {
+                if (!this.checked) {
+                    const firstCheckbox = document.querySelector('.city-checkbox');
+                    if (firstCheckbox) {
+                        cityCheckboxes.forEach(cb => cb.checked = false);
+                        firstCheckbox.checked = true;
+                        const event = new Event('change');
+                        firstCheckbox.dispatchEvent(event);
+                    }
+                }
+            });
+        }
 
-// If any individual college checkbox is unchecked, uncheck "All"
-document.querySelectorAll('.college-checkbox').forEach(cb => {
-    cb.addEventListener('change', function() {
-        const selectAllCollegesCheckbox = document.getElementById('selectAllColleges');
-        if (!this.checked) {
-            selectAllCollegesCheckbox.checked = false;
-        } else {
-            const unchecked = Array.from(document.querySelectorAll('.college-checkbox')).some(cb => !cb.checked);
+        // ==========================================
+        // COLLEGE HANDLING
+        // ==========================================
+        function toggleAllColleges(checkbox) {
+            const collegeCheckboxes = document.querySelectorAll('.college-checkbox');
+            collegeCheckboxes.forEach(cb => {
+                cb.checked = checkbox.checked;
+                const event = new Event('change');
+                cb.dispatchEvent(event);
+            });
+        }
+
+        function initializeSelectAllColleges() {
+            const selectAllCollegesCheckbox = document.getElementById('selectAllColleges');
+            const collegeCheckboxes = document.querySelectorAll('.college-checkbox');
+            let isSelectAllTriggered = false;
+
+            const unchecked = Array.from(collegeCheckboxes).some(cb => !cb.checked);
             if (!unchecked) {
                 selectAllCollegesCheckbox.checked = true;
             }
-        }
-    });
-});
 
-// Initialize select all colleges after data update (if the checkboxes are dynamic)
-function initializeSelectAllColleges() {
-    const selectAllCollegesCheckbox = document.getElementById('selectAllColleges');
-    const collegeCheckboxes = document.querySelectorAll('.college-checkbox');
-    let isSelectAllTriggered = false; // Flag to prevent double popup when "Select All" is unchecked
-
-    // If all colleges are selected, ensure "Select All" is checked
-    const unchecked = Array.from(collegeCheckboxes).some(cb => !cb.checked);
-    if (!unchecked) {
-        selectAllCollegesCheckbox.checked = true;
-    }
-
-    // Handle "Select All" functionality
-    selectAllCollegesCheckbox.addEventListener('change', function() {
-        isSelectAllTriggered = true; // Set flag when "Select All" is clicked
-        toggleAllColleges(this);
-        isSelectAllTriggered = false; // Reset flag after change
-    });
-
-    // Add listeners for individual college checkboxes
-    collegeCheckboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            // If any individual college checkbox is unchecked, uncheck "Select All Colleges"
-            if (!this.checked) {
-                selectAllCollegesCheckbox.checked = false;
-            } else {
-                const unchecked = Array.from(collegeCheckboxes).some(cb => !cb.checked);
-                if (!unchecked) {
-                    selectAllCollegesCheckbox.checked = true;
-                }
-            }
-
-            // Ensure at least one checkbox is checked, but prevent double popup
-            const checkedCount = Array.from(collegeCheckboxes).filter(chk => chk.checked).length;
-            if (checkedCount === 0 && !isSelectAllTriggered) {
-                alert('At least one college must be selected.');
-                this.checked = true; // Keep the checkbox checked
-            }
-        });
-    });
-
-    // Automatically check the first checkbox if 'Select All' is unchecked
-    selectAllCollegesCheckbox.addEventListener('change', function() {
-        if (!this.checked) {
-            const firstCheckbox = document.querySelector('.college-checkbox');
-            if (firstCheckbox) {
-                // Uncheck all checkboxes
-                collegeCheckboxes.forEach(cb => cb.checked = false);
-
-                // Check only the first checkbox
-                firstCheckbox.checked = true; // Check the first checkbox
-                
-                // Trigger change event programmatically for the first checkbox
-                const event = new Event('change');
-                firstCheckbox.dispatchEvent(event);
-            }
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    initializeSelectAllColleges();
-});
-
-// Toggle all branches
-function toggleAllBranches(checkbox) {
-    const branchCheckboxes = document.querySelectorAll('.branch-checkbox');
-    branchCheckboxes.forEach(cb => {
-        cb.checked = checkbox.checked;
-        // Trigger change event programmatically
-        const event = new Event('change');
-        cb.dispatchEvent(event);
-    });
-}
-
-
-// If any individual branch checkbox is unchecked, uncheck "Select All Branches"
-function initializeSelectAllBranches() {
-    const selectAllBranchesCheckbox = document.getElementById('select_all_branches');
-    const branchCheckboxes = document.querySelectorAll('.branch-checkbox');
-    let isSelectAllTriggered = false; // Flag to prevent popup for "Select All" uncheck
-
-    // If all branches are selected, ensure "Select All Branches" is checked
-    const unchecked = Array.from(branchCheckboxes).some(cb => !cb.checked);
-    if (!unchecked) {
-        selectAllBranchesCheckbox.checked = true;
-    }
-
-    // Handle "Select All Branches" functionality
-    selectAllBranchesCheckbox.addEventListener('change', function() {
-        isSelectAllTriggered = true; // Set flag when "Select All" is clicked
-        toggleAllBranches(this);
-        isSelectAllTriggered = false; // Reset flag after change
-    });
-
-    // Add listeners for individual branch checkboxes
-    branchCheckboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            // If any individual branch checkbox is unchecked, uncheck "Select All Branches"
-            if (!this.checked) {
-                selectAllBranchesCheckbox.checked = false;
-            } else {
-                const unchecked = Array.from(branchCheckboxes).some(cb => !cb.checked);
-                if (!unchecked) {
-                    selectAllBranchesCheckbox.checked = true;
-                }
-            }
-
-            // Ensure at least one checkbox is checked
-            const checkedCount = Array.from(branchCheckboxes).filter(chk => chk.checked).length;
-            if (checkedCount === 0 && !isSelectAllTriggered) {
-                alert('At least one branch must be selected.');
-                this.checked = true; // Re-check the checkbox if it was the last one
-            }
-        });
-    });
-
-    // Automatically check the first checkbox if 'Select All' is unchecked, without popup
-    selectAllBranchesCheckbox.addEventListener('change', function() {
-        if (!this.checked) {
-            const firstCheckbox = document.querySelector('.branch-checkbox');
-            if (firstCheckbox) {
-                // Uncheck all checkboxes
-                branchCheckboxes.forEach(cb => cb.checked = false);
-
-                // Check only the first checkbox
-                firstCheckbox.checked = true; // Check the first checkbox
-                
-                // Trigger change event programmatically for the first checkbox
-                const event = new Event('change');
-                firstCheckbox.dispatchEvent(event);
-            }
-        }
-    });
-}
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    initializeSelectAllBranches()
-});
-
-
-     </script>
-
-
-
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Function to update cities based on selected institute types
-    function updateCities() {
-        const selectedInstituteTypes = Array.from(document.querySelectorAll('input[name="institute_type"]:checked')).map(cb => cb.value);
-
-        if (selectedInstituteTypes.length === 0) {
-            console.log("No institute types selected.");
-            return;
-        }
-
-        fetch('/update-cities', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ institute_types: selectedInstituteTypes }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            const cityDropdown = document.getElementById('cityDropdown');
-            cityDropdown.innerHTML = `
-                <input type="checkbox" id="select_all_cities" onclick="toggleAllCities(this)"> <label for="select_all_cities">All</label><br>
-            `;
-            data.cities.forEach(city => {
-                cityDropdown.innerHTML += `
-                    <label>
-                        <input type="checkbox" name="city[]" value="${city}" id="city_${city}" class="city-checkbox" checked>
-                        ${city}
-                    </label><br>
-                `;
+            selectAllCollegesCheckbox.addEventListener('change', function() {
+                isSelectAllTriggered = true;
+                toggleAllColleges(this);
+                isSelectAllTriggered = false;
             });
-            initializeSelectAllCities();
-            attachCityEventListeners(); // Reattach event listeners for city checkboxes
-            updateColleges(); // Update colleges based on both city and institute type filters
-        })
-        .catch(error => console.error('Error updating cities:', error));
-    }
 
-    // Function to update colleges based on selected cities and institute types
-    function updateColleges() {
-        const selectedInstituteTypes = Array.from(document.querySelectorAll('input[name="institute_type"]:checked')).map(cb => cb.value);
-        const selectedCities = Array.from(document.querySelectorAll('input[name="city[]"]:checked')).map(cb => cb.value);
+            collegeCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if (!this.checked) {
+                        selectAllCollegesCheckbox.checked = false;
+                    } else {
+                        const unchecked = Array.from(collegeCheckboxes).some(cb => !cb.checked);
+                        if (!unchecked) {
+                            selectAllCollegesCheckbox.checked = true;
+                        }
+                    }
 
-        if (selectedInstituteTypes.length === 0 || selectedCities.length === 0) {
-            console.log("No institute types or cities selected.");
-            return;
+                    const checkedCount = Array.from(collegeCheckboxes).filter(chk => chk.checked).length;
+                    if (checkedCount === 0 && !isSelectAllTriggered) {
+                        alert('At least one college must be selected.');
+                        this.checked = true;
+                    }
+                });
+            });
+
+            selectAllCollegesCheckbox.addEventListener('change', function() {
+                if (!this.checked) {
+                    const firstCheckbox = document.querySelector('.college-checkbox');
+                    if (firstCheckbox) {
+                        collegeCheckboxes.forEach(cb => cb.checked = false);
+                        firstCheckbox.checked = true;
+                        const event = new Event('change');
+                        firstCheckbox.dispatchEvent(event);
+                    }
+                }
+            });
         }
 
-        fetch('/update-colleges', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ institute_types: selectedInstituteTypes, cities: selectedCities }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            const collegeDropdown = document.getElementById('collegeDropdownMenu');
-            collegeDropdown.innerHTML = `
-                <label>
-                    <input type="checkbox" id="selectAllColleges"> Select All
-                </label>
-            `;
-            data.colleges.forEach(college => {
-                collegeDropdown.innerHTML += `
+        // ==========================================
+        // BRANCH HANDLING
+        // ==========================================
+        function toggleAllBranches(checkbox) {
+            const branchCheckboxes = document.querySelectorAll('.branch-checkbox');
+            branchCheckboxes.forEach(cb => {
+                cb.checked = checkbox.checked;
+                const event = new Event('change');
+                cb.dispatchEvent(event);
+            });
+        }
+
+        function initializeSelectAllBranches() {
+            const selectAllBranchesCheckbox = document.getElementById('select_all_branches');
+            const branchCheckboxes = document.querySelectorAll('.branch-checkbox');
+            let isSelectAllTriggered = false;
+
+            const unchecked = Array.from(branchCheckboxes).some(cb => !cb.checked);
+            if (!unchecked) {
+                selectAllBranchesCheckbox.checked = true;
+            }
+
+            selectAllBranchesCheckbox.addEventListener('change', function() {
+                isSelectAllTriggered = true;
+                toggleAllBranches(this);
+                isSelectAllTriggered = false;
+            });
+
+            branchCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if (!this.checked) {
+                        selectAllBranchesCheckbox.checked = false;
+                    } else {
+                        const unchecked = Array.from(branchCheckboxes).some(cb => !cb.checked);
+                        if (!unchecked) {
+                            selectAllBranchesCheckbox.checked = true;
+                        }
+                    }
+
+                    const checkedCount = Array.from(branchCheckboxes).filter(chk => chk.checked).length;
+                    if (checkedCount === 0 && !isSelectAllTriggered) {
+                        alert('At least one branch must be selected.');
+                        this.checked = true;
+                    }
+                });
+            });
+
+            selectAllBranchesCheckbox.addEventListener('change', function() {
+                if (!this.checked) {
+                    const firstCheckbox = document.querySelector('.branch-checkbox');
+                    if (firstCheckbox) {
+                        branchCheckboxes.forEach(cb => cb.checked = false);
+                        firstCheckbox.checked = true;
+                        const event = new Event('change');
+                        firstCheckbox.dispatchEvent(event);
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // DYNAMIC UPDATES (Cities/Colleges/Branches)
+        // ==========================================
+        function updateCities() {
+            const selectedInstituteTypes = Array.from(document.querySelectorAll('input[name="institute_type"]:checked')).map(cb => cb.value);
+
+            if (selectedInstituteTypes.length === 0) {
+                console.log("No institute types selected.");
+                return;
+            }
+
+            fetch('/update-cities', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ institute_types: selectedInstituteTypes }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const cityDropdown = document.getElementById('cityDropdown');
+                cityDropdown.innerHTML = `
+                    <input type="checkbox" id="select_all_cities" onclick="toggleAllCities(this)"> <label for="select_all_cities">All</label><br>
+                `;
+                data.cities.forEach(city => {
+                    cityDropdown.innerHTML += `
+                        <label>
+                            <input type="checkbox" name="city[]" value="${city}" id="city_${city}" class="city-checkbox" checked>
+                            ${city}
+                        </label><br>
+                    `;
+                });
+                initializeSelectAllCities();
+                attachCityEventListeners();
+                updateColleges();
+            })
+            .catch(error => console.error('Error updating cities:', error));
+        }
+
+        function updateColleges() {
+            const selectedInstituteTypes = Array.from(document.querySelectorAll('input[name="institute_type"]:checked')).map(cb => cb.value);
+            const selectedCities = Array.from(document.querySelectorAll('input[name="city[]"]:checked')).map(cb => cb.value);
+
+            if (selectedInstituteTypes.length === 0 || selectedCities.length === 0) {
+                console.log("No institute types or cities selected.");
+                return;
+            }
+
+            fetch('/update-colleges', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ institute_types: selectedInstituteTypes, cities: selectedCities }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const collegeDropdown = document.getElementById('collegeDropdownMenu');
+                collegeDropdown.innerHTML = `
                     <label>
-                        <input type="checkbox" name="college_name[]" value="${college}" class="college-checkbox" checked>
-                        ${college}
+                        <input type="checkbox" id="selectAllColleges"> Select All
                     </label>
                 `;
-            });
-            initializeSelectAllColleges();
-            attachCollegeEventListeners(); // Reattach event listeners for college checkboxes
-            updateBranches(); // Update branches based on new college options
-        })
-        .catch(error => console.error('Error updating colleges:', error));
-    }
-
-
-
-    // Function to update branches based on selected colleges
-    function updateBranches() {
-        const selectedColleges = Array.from(document.querySelectorAll('input[name="college_name[]"]:checked')).map(cb => cb.value);
-
-        if (selectedColleges.length === 0) {
-            console.log("No colleges selected.");
-            return;
+                data.colleges.forEach(college => {
+                    collegeDropdown.innerHTML += `
+                        <label>
+                            <input type="checkbox" name="college_name[]" value="${college}" class="college-checkbox" checked>
+                            ${college}
+                        </label>
+                    `;
+                });
+                initializeSelectAllColleges();
+                attachCollegeEventListeners();
+                updateBranches();
+            })
+            .catch(error => console.error('Error updating colleges:', error));
         }
 
-        fetch('/update-branches', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ colleges: selectedColleges }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            const branchDropdown = document.getElementById('branchDropdown');
-            branchDropdown.innerHTML = `
-                <input type="checkbox" id="select_all_branches" onclick="toggleAllBranches(this)"> <label for="select_all_branches">All</label><br>
-            `;
-            data.branches.forEach(branch => {
-                branchDropdown.innerHTML += `
-                    <label>
-                        <input type="checkbox" name="branch[]" value="${branch}" id="branch_${branch}" class="branch-checkbox" checked>
-                        ${branch}
-                    </label><br>
+        function updateBranches() {
+            const selectedColleges = Array.from(document.querySelectorAll('input[name="college_name[]"]:checked')).map(cb => cb.value);
+
+            if (selectedColleges.length === 0) {
+                console.log("No colleges selected.");
+                return;
+            }
+
+            fetch('/update-branches', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ colleges: selectedColleges }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const branchDropdown = document.getElementById('branchDropdown');
+                branchDropdown.innerHTML = `
+                    <input type="checkbox" id="select_all_branches" onclick="toggleAllBranches(this)"> <label for="select_all_branches">All</label><br>
                 `;
-            });
+                data.branches.forEach(branch => {
+                    branchDropdown.innerHTML += `
+                        <label>
+                            <input type="checkbox" name="branch[]" value="${branch}" id="branch_${branch}" class="branch-checkbox" checked>
+                            ${branch}
+                        </label><br>
+                    `;
+                });
 
+                initializeSelectAllBranches();
+            })
+            .catch(error => console.error('Error updating branches:', error));
+        }
+
+        function attachCityEventListeners() {
+            document.querySelectorAll('input[name="city[]"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateColleges();
+                });
+            });
+        }
+
+        function attachCollegeEventListeners() {
+            document.querySelectorAll('input[name="college_name[]"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateBranches();
+                });
+            });
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize domicile and caste
+            handleDomicileChange();
+            
+            // Initialize category checkboxes
+            updateCategories();
+            
+            // Set up event listeners for dynamic updates
+            document.getElementById('caste').addEventListener('change', updateCategories);
+            document.getElementById('class').addEventListener('change', updateCategories);
+            document.getElementById('gender').addEventListener('change', updateCategories);
+            document.getElementById('domicile').addEventListener('change', updateCategories);
+
+            // Initialize "Select All" functionality
+            initializeSelectAllCities();
+            initializeSelectAllColleges();
             initializeSelectAllBranches();
-        })
-        .catch(error => console.error('Error updating branches:', error));
-    }
 
-    // Attach event listeners for city checkboxes
-    function attachCityEventListeners() {
-        document.querySelectorAll('input[name="city[]"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                updateColleges(); // Update colleges when city changes
+            // Attach institute type listeners
+            document.querySelectorAll('input[name="institute_type"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateCities();
+                });
             });
+
+            // Initial attachment of city and college event listeners
+            attachCityEventListeners();
+            attachCollegeEventListeners();
         });
-    }
-
-    // Attach event listeners for college checkboxes
-    function attachCollegeEventListeners() {
-        document.querySelectorAll('input[name="college_name[]"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                updateBranches(); // Update branches when college changes
-            });
-        });
-    }
-
-    // Attach event listeners to institute type checkboxes
-    document.querySelectorAll('input[name="institute_type"]').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            updateCities(); // Update cities when institute type changes
-        });
-    });
-
-    // Initial attachment of city and college event listeners
-    attachCityEventListeners();
-    attachCollegeEventListeners();
-});
-
-
-  </script>
-   
+    </script>
 </body>
 </html>
-
