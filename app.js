@@ -8,7 +8,6 @@ app.use(express.static('public'));
 app.use(express.json()); // Ensure this middleware is used
 
 
-
 const port = 3000;
 
 // Set up EJS as the template engine
@@ -19,11 +18,165 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 
 
+//start
+// Add these require statements at the top
+
+const session = require('express-session');
+const passport = require('passport');
+
+
+
+// 1. Session middleware FIRST
+app.use(session({
+    secret: 'your-secret-key-here',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
+}));
+
+// 2. THEN Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Rest of your app configuration...
+
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const bcrypt = require('bcryptjs');
+
+// Configure passport with Google strategy
+passport.use(new GoogleStrategy({
+    clientID: '---',
+    clientSecret: '---',
+    callbackURL: 'http://localhost:3000/auth/google/callback'
+},
+async (accessToken, refreshToken, profile, done) => {
+    try {
+        // Check if user exists in database
+        const [existingUser] = await db.promise().query('SELECT * FROM users WHERE google_id = ? OR email = ?', [profile.id, profile.emails[0].value]);
+        
+        if (existingUser.length > 0) {
+            // Update google_id if logging in with existing email
+            if (!existingUser[0].google_id) {
+                await db.promise().query('UPDATE users SET google_id = ? WHERE email = ?', [profile.id, profile.emails[0].value]);
+            }
+            return done(null, existingUser[0]);
+        } else {
+            // Create new user
+            const newUser = {
+                google_id: profile.id,
+                name: profile.displayName,
+                email: profile.emails[0].value,
+                mobile: null
+            };
+            
+            const [result] = await db.promise().query('INSERT INTO users SET ?', newUser);
+            newUser.id = result.insertId;
+            return done(null, newUser);
+        }
+    } catch (err) {
+        return done(err, null);
+    }
+}));
+
+// Serialize and deserialize user
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const [user] = await db.promise().query('SELECT * FROM users WHERE id = ?', [id]);
+        done(null, user[0]);
+    } catch (err) {
+        done(err, null);
+    }
+});
+
+// Initialize passport and session
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Add these routes for authentication
+app.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+        // Successful authentication, redirect to complete profile if mobile is missing
+        if (!req.user.mobile) {
+            res.redirect('/complete-profile');
+        } else {
+            res.redirect('/');
+        }
+    }
+);
+
+// Add logout route
+app.get('/logout', (req, res) => {
+    req.logout(() => {
+        res.redirect('/login');
+    });
+});
+
+// Middleware to check authentication
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login');
+}
+
+
+
+// Login route
+app.get('/login', (req, res) => {
+    if (req.isAuthenticated()) {
+        return res.redirect('/');
+    }
+    res.render('login');
+});
+
+// Complete profile route
+app.get('/complete-profile', ensureAuthenticated, (req, res) => {
+    if (req.user.mobile) {
+        return res.redirect('/');
+    }
+    res.render('complete-profile', { user: req.user });
+});
+
+// Handle profile completion
+app.post('/complete-profile', ensureAuthenticated, async (req, res) => {
+    try {
+        const { mobile } = req.body;
+        await db.promise().query('UPDATE users SET mobile = ? WHERE id = ?', [mobile, req.user.id]);
+        
+        // Update user in session
+        req.user.mobile = mobile;
+        res.redirect('/');
+    } catch (err) {
+        console.error('Error updating profile:', err);
+        res.redirect('/complete-profile');
+    }
+});
+// Update your existing routes to use ensureAuthenticated middleware
+// app.get('/', ensureAuthenticated, (req, res) => {
+//     // Your existing route logic
+// });
+
+// app.post('/search', ensureAuthenticated, (req, res) => {
+//     // Your existing route logic
+// });
+//end
+
+
+
 // MySQL connection setup
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '-----',
+    password: '------',
     database: 'clg_predictor'
 });
 
@@ -34,8 +187,6 @@ db.connect((err) => {
     }
     console.log('Connected to the MySQL database.');
 });
-
-
 
 
 function generateCategories(selectedCaste, selectedClass, selectedGender) {
@@ -73,10 +224,8 @@ function generateCategories(selectedCaste, selectedClass, selectedGender) {
     return categories;
 }
 
-// Example usage
 
-
-app.get('/', (req, res) => {
+app.get('/',ensureAuthenticated, (req, res) => {
     const instituteTypeQuery = 'SELECT DISTINCT institute_type FROM data_table';
     const cityQuery = 'SELECT DISTINCT city FROM data_table  WHERE year = 2024';
     const collegeNameQuery = 'SELECT DISTINCT college_name FROM data_table  WHERE year = 2024 ORDER BY college_name ASC';
@@ -84,11 +233,11 @@ app.get('/', (req, res) => {
     const query = `SELECT DISTINCT branch FROM data_table  WHERE year = 2024`;
 
 
-db.query(instituteTypeQuery, (err, instituteTypes) => {
-        if (err) {
-            console.error('Error fetching institute types:', err);
-            return res.status(500).send('Internal Server Error');
-        }
+        db.query(instituteTypeQuery, (err, instituteTypes) => {
+             if (err) {
+                console.error('Error fetching institute types:', err);
+                return res.status(500).send('Internal Server Error');
+            }
 
         db.query(cityQuery, (err, cities) => {
             if (err) {
@@ -96,31 +245,27 @@ db.query(instituteTypeQuery, (err, instituteTypes) => {
                 return res.status(500).send('Internal Server Error');
             }
 
-            const sortedCities = cities.map(row => row.city).sort();
+        const sortedCities = cities.map(row => row.city).sort();
 
-            db.query(collegeNameQuery, (err, collegeNames) => {
-                if (err) {
-                    console.error('Error fetching college names:', err);
-                    return res.status(500).send('Internal Server Error');
-                }
+        db.query(collegeNameQuery, (err, collegeNames) => {
+            if (err) {
+                console.error('Error fetching college names:', err);
+                return res.status(500).send('Internal Server Error');
+            }
 
+        db.query(yearQuery, (err, years) => {
+            if (err) {
+                console.error('Error fetching years:', err);
+                return res.status(500).send('Internal Server Error');
+            }
+  
+        db.query(query, (err, branchResults) => {
+            if (err) {
+                console.error('Error fetching branches:', err);
+                return res.status(500).send('Internal Server Error');
+            }
 
-                db.query(yearQuery, (err, years) => {
-                    if (err) {
-                        console.error('Error fetching years:', err);
-                        return res.status(500).send('Internal Server Error');
-                    }
-
-            
-
-                        db.query(query, (err, branchResults) => {
-                            if (err) {
-                                console.error('Error fetching branches:', err);
-                                return res.status(500).send('Internal Server Error');
-                            }
-
-                        
-
+    
                         res.render('index', {
                             collegeNames: collegeNames.map(row => row.college_name),
                             instituteTypes: instituteTypes.map(row => row.institute_type),
@@ -131,6 +276,8 @@ db.query(instituteTypeQuery, (err, instituteTypes) => {
                             classes: ['X', 'H', 'S', 'NCC', 'FF'], // Class options
                             genders: ['OP', 'F'], // Gender options
                             branches: branchResults,
+                            //start 
+                            user: req.user || null //end
                         });
                     });
                 });
@@ -138,8 +285,6 @@ db.query(instituteTypeQuery, (err, instituteTypes) => {
         });
     });
 });
-
-
 
 
 
@@ -234,7 +379,10 @@ app.get('/generate-categories', (req, res) => {
 
 
 
-app.post('/search', (req, res) => {
+app.post('/search',ensureAuthenticated, (req, res) => {
+
+
+
     const rank = parseInt(req.body.rank);
     const selectedCaste = req.body.caste;
     const selectedClass = req.body.class;
@@ -409,10 +557,8 @@ app.post('/search', (req, res) => {
 });
 
 
-
-
-
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
 });
+
 
